@@ -14,8 +14,8 @@ class SRNet(nn.Module):
     SR fully connected body network.
     """
     def __init__(self, output_dim, body, gate=F.relu):
-        super(SRFCBody, self).__init__()
-
+        super(SRNet, self).__init__()
+        self.body = body
         self.layer1 = layer_init(nn.Linear(body.feature_dim, body.feature_dim))
         self.layer2 = layer_init(nn.Linear(body.feature_dim, body.feature_dim * output_dim))
         self.gate = gate
@@ -24,6 +24,7 @@ class SRNet(nn.Module):
         self.w = layer_init(nn.Linear(body.feature_dim, 1))
 
     def forward(self, x):
+        x = self.body(x)
         x = self.gate(self.layer1(x))
         x = self.gate(self.layer2(x))
         psi = x.view(x.size(0), output_dim, body.feature_dim)

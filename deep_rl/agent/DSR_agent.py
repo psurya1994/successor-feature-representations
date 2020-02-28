@@ -69,6 +69,7 @@ class DSRAgent(BaseAgent):
     def eval_step(self, state):
         self.config.state_normalizer.set_read_only()
         state = self.config.state_normalizer(state)
+        import pdb; pdb.set_trace()
         _, q = self.network(state)
         action = to_np(q.argmax(-1))
         self.config.state_normalizer.unset_read_only()
@@ -89,6 +90,7 @@ class DSRAgent(BaseAgent):
 
         # Start updating network parameters after exploration_steps
         if self.total_steps > self.config.exploration_steps:
+            import pdb; pdb.set_trace()
             experiences = self.replay.sample()
             states, actions, rewards, next_states, terminals = experiences
             states = self.config.state_normalizer(states)

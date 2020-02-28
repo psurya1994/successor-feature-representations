@@ -39,6 +39,7 @@ class BaseAgent:
         env = self.config.eval_env
         state = env.reset()
         while True:
+            import pdb; pdb.set_trace()
             action = self.eval_step(state)
             state, reward, done, info = env.step(action)
             ret = info[0]['episodic_return']
