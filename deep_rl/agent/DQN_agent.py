@@ -62,7 +62,6 @@ class DQNAgent(BaseAgent):
 
     def eval_step(self, state):
         self.config.state_normalizer.set_read_only()
-        import pdb; pdb.set_trace()
         state = self.config.state_normalizer(state)
         q = self.network(state)
         action = to_np(q.argmax(-1))

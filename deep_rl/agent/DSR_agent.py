@@ -69,7 +69,6 @@ class DSRAgent(BaseAgent):
     def eval_step(self, state):
         self.config.state_normalizer.set_read_only()
         state = self.config.state_normalizer(state)
-        import pdb; pdb.set_trace()
         _, q = self.network(state)
         action = to_np(q.argmax(-1))
         self.config.state_normalizer.unset_read_only()
