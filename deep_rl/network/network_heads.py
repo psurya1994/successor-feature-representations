@@ -7,6 +7,35 @@
 from .network_utils import *
 from .network_bodies import *
 
+class SRNet(nn.Module):
+    """
+    Added by Surya.
+
+    SR fully connected body network.
+    """
+    def __init__(self, output_dim, body, gate=F.relu):
+        super(SRFCBody, self).__init__()
+
+        self.layer1 = layer_init(nn.Linear(body.feature_dim, body.feature_dim))
+        self.layer2 = layer_init(nn.Linear(body.feature_dim, body.feature_dim * output_dim))
+        self.gate = gate
+        self.feature_dim = body.feature_dim * output_dim
+
+        self.w = layer_init(nn.Linear(body.feature_dim, 1))
+
+    def forward(self, x):
+        x = self.gate(self.layer1(x))
+        x = self.gate(self.layer2(x))
+        psi = x.view(x.size(0), output_dim, body.feature_dim)
+
+        y = [] # TODO: better way to do the same
+        for i in range(output_dim):
+            y.append(self.w(psi[i:(i+1)*body.feature_dim]))
+
+        out = torch.cat((y[0], y[1], y[2], y[3]), 1) #TODO: make this general enough to work with any output_dim
+
+        return psi, y
+
 
 class VanillaNet(nn.Module, BaseNet):
     def __init__(self, output_dim, body):

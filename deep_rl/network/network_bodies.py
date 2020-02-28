@@ -6,6 +6,13 @@
 
 from .network_utils import *
 
+class SRIdentityBody(nn.Module):
+    def __init__(self, state_dim):
+        super(SRIdentityBody, self).__init__()
+        self.feature_dim = state_dim
+
+    def forward(self, x):
+        return x
 
 class NatureConvBody(nn.Module):
     def __init__(self, in_channels=4):
