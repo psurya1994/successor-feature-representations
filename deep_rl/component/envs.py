@@ -15,6 +15,8 @@ from baselines.common.atari_wrappers import make_atari, wrap_deepmind
 from baselines.common.atari_wrappers import FrameStack as FrameStack_
 from baselines.common.vec_env.subproc_vec_env import SubprocVecEnv, VecEnv
 
+from .fourrooms import FourRooms
+
 from ..utils import *
 
 try:
@@ -32,7 +34,10 @@ def make_env(env_id, seed, rank, episode_life=True):
             _, domain, task = env_id.split('-')
             env = dm_control2gym.make(domain_name=domain, task_name=task)
         else:
-            env = gym.make(env_id)
+            if(env_id == "FourRooms"):
+                env = FourRooms()
+            else:
+                env = gym.make(env_id)
         is_atari = hasattr(gym.envs, 'atari') and isinstance(
             env.unwrapped, gym.envs.atari.atari_env.AtariEnv)
         if is_atari:
