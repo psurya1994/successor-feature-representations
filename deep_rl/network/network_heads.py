@@ -25,14 +25,14 @@ class SRNet(nn.Module):
         self.w = layer_init(nn.Linear(body.feature_dim, 1))
 
     def forward(self, x):
-        x = self.body(x)
-        x = self.gate(self.layer1(x))
-        x = self.gate(self.layer2(x))
-        psi = x.view(x.size(0), self.output_dim, self.body.feature_dim)
+        x = self.body(x) # shape: b x state_dim
+        x = self.gate(self.layer1(x)) # shape: b x state_dim
+        x = self.gate(self.layer2(x)) # shape: b x (state_dim*action_dim)
+        psi = x.view(x.size(0), self.output_dim, self.body.feature_dim) # shape: b x action_dim x state_dim
 
         y = [] # TODO: better way to do the same
         for i in range(self.output_dim):
-            y.append(self.w(psi[i:(i+1) * self.body.feature_dim]))
+            y.append(self.w(psi[:, i, :]))
 
         out = torch.cat((y[0], y[1], y[2], y[3]), 1) #TODO: make this general enough to work with any output_dim
 
