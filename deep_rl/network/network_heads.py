@@ -25,7 +25,8 @@ class SRNet(nn.Module):
         self.w = layer_init(nn.Linear(body.feature_dim, 1))
 
     def forward(self, x):
-        x = self.body(x) # shape: b x state_dim
+        x = self.body(tensor(x)) # shape: b x state_dim
+#         import pdb; pdb.set_trace()
         x = self.gate(self.layer1(x)) # shape: b x state_dim
         x = self.gate(self.layer2(x)) # shape: b x (state_dim*action_dim)
         psi = x.view(x.size(0), self.output_dim, self.body.feature_dim) # shape: b x action_dim x state_dim

@@ -89,14 +89,16 @@ class DSRAgent(BaseAgent):
 
         # Start updating network parameters after exploration_steps
         if self.total_steps > self.config.exploration_steps:
-            import pdb; pdb.set_trace()
+#             import pdb; pdb.set_trace()
             experiences = self.replay.sample()
             states, actions, rewards, next_states, terminals = experiences
             states = self.config.state_normalizer(states)
             next_states = self.config.state_normalizer(next_states)
 
             # Computing targets
-            psi_next, q_next = self.target_network(next_states).detach()
+            psi_next, q_next = self.target_network(next_states)
+            psi_next = psi_next.detach()
+            q_next = q_next.detach()
             if self.config.double_q:
                 best_actions = torch.argmax(self.network(next_states), dim=-1)
                 q_next = q_next[self.batch_indices, best_actions]
@@ -108,13 +110,14 @@ class DSRAgent(BaseAgent):
             rewards = tensor(rewards)
             q_next = self.config.discount * q_next * (1 - terminals)
             q_next.add_(rewards)
-            psi_next = self.config.discount * psi_next * (1 - terminals)
+            psi_next = self.config.discount * psi_next * (1 - terminals.unsqueeze(1).repeat(1, psi_next.shape[1]))
             psi_next.add_(states) # TODO: double chec this
 
             # Computing estimates
             actions = tensor(actions).long()
             psi, q = self.network(states)
             q = q[self.batch_indices, actions]
+            psi = psi[self.batch_indices, actions, :]
 
             # Estimating the loss
             loss_q = (q_next - q).pow(2).mul(0.5).mean()
