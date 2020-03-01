@@ -16,6 +16,8 @@ class SRNet(nn.Module):
     def __init__(self, output_dim, body, gate=F.relu):
         super(SRNet, self).__init__()
         self.body = body
+        self.feature_dim = body.feature_dim
+        self.output_dim = output_dim# TODO: check if this is the right way to do it
         self.layer1 = layer_init(nn.Linear(body.feature_dim, body.feature_dim))
         self.layer2 = layer_init(nn.Linear(body.feature_dim, body.feature_dim * output_dim))
         self.gate = gate
@@ -27,10 +29,10 @@ class SRNet(nn.Module):
         x = self.body(x)
         x = self.gate(self.layer1(x))
         x = self.gate(self.layer2(x))
-        psi = x.view(x.size(0), output_dim, body.feature_dim)
+        psi = x.view(x.size(0), self.output_dim, body.feature_dim)
 
         y = [] # TODO: better way to do the same
-        for i in range(output_dim):
+        for i in range(self.output_dim):
             y.append(self.w(psi[i:(i+1)*body.feature_dim]))
 
         out = torch.cat((y[0], y[1], y[2], y[3]), 1) #TODO: make this general enough to work with any output_dim
