@@ -36,7 +36,7 @@ class SRNet(nn.Module):
 
         out = torch.cat((y[0], y[1], y[2], y[3]), 1) #TODO: make this general enough to work with any output_dim
 
-        return psi, y
+        return psi, out
 
 
 class VanillaNet(nn.Module, BaseNet):
