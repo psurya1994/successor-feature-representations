@@ -14,25 +14,41 @@ class SRNet(nn.Module):
 
     SR fully connected body network.
     """
-    def __init__(self, output_dim, body, gate=F.relu):
+    def __init__(self, output_dim, body, phi2psi, gate=F.relu):
         super(SRNet, self).__init__()
         self.body = body
-        self.output_dim = output_dim# TODO: check if this is the right way to do it
-        self.layer1 = layer_init(nn.Linear(body.feature_dim, body.feature_dim))
-        self.layer2 = layer_init(nn.Linear(body.feature_dim, body.feature_dim * output_dim))
-        self.gate = gate
-        self.feature_dim = body.feature_dim * output_dim
+        self.phi2psi = phi2psi
         self.w = Parameter(torch.Tensor(body.feature_dim))
 
     def forward(self, x):
         phi = self.body(tensor(x)) # shape: b x state_dim
-        psi = self.gate(self.layer1(phi)) # shape: b x state_dim
-        psi = self.gate(self.layer2(psi)) # shape: b x (state_dim*action_dim)
-        psi = psi.view(psi.size(0), self.output_dim, self.body.feature_dim) # shape: b x action_dim x state_dim
-        out = torch.matmul(psi, self.w)
-
+        psi = self.phi2psi(phi) # shape: b x action_dim x state_dim
+        out = torch.matmul(psi, self.w) # shape: b x action_dim
         return phi, psi, out
 
+class Phi2Psi(nn.Module):
+    """
+    Network that estimates the SR from latent state representation.
+
+    Network looks like this:
+        feature_dim --> hidden_unit[0] -> ... -> hidden_unit[end] --> feature_dim*action_dim
+
+    Adopted from FCBody in network_bodies.py. Added by Surya. 
+    """
+    def __init__(self, feature_dim, action_dim, hidden_units=(64, 64), gate=F.relu):
+        super(phi2psi, self).__init__()
+        dims = (feature_dim,) + hidden_units
+        self.layers = nn.ModuleList(
+            [layer_init(nn.Linear(dim_in, dim_out)) for dim_in, dim_out in zip(dims[:-1], dims[1:])])
+        self.final = layer_init(nn.Linear(dims[-1], body.feature_dim * output_dim))
+        self.gate = gate
+
+    def forward(self, phi):
+        for layer in self.layers:
+            psi = self.gate(layer(phi))
+        psi = self.final(psi)
+        psi = psi.view(psi.size(0), self.output_dim, self.body.feature_dim) # shape: b x action_dim x state_dim
+        return psi
 
 class VanillaNet(nn.Module, BaseNet):
     def __init__(self, output_dim, body):

@@ -47,7 +47,7 @@ def dsr_feature(**kwargs):
     config.c = 0.1
 
     config.optimizer_fn = lambda params: torch.optim.RMSprop(params, 0.001)
-    config.network_fn = lambda: SRNet(config.action_dim, SRIdentityBody(config.state_dim))
+    config.network_fn = lambda: SRNet(config.action_dim, SRIdentityBody(config.state_dim), Phi2Psi(config.state_dim, config.action_dim))
     # config.network_fn = lambda: DuelingNet(config.action_dim, FCBody(config.state_dim))
     # config.replay_fn = lambda: Replay(memory_size=int(1e4), batch_size=10)
     config.replay_fn = lambda: AsyncReplay(memory_size=int(1e4), batch_size=10)
