@@ -36,18 +36,20 @@ class Phi2Psi(nn.Module):
     Adopted from FCBody in network_bodies.py. Added by Surya. 
     """
     def __init__(self, feature_dim, action_dim, hidden_units=(64, 64), gate=F.relu):
-        super(phi2psi, self).__init__()
+        super(Phi2Psi, self).__init__()
         dims = (feature_dim,) + hidden_units
         self.layers = nn.ModuleList(
             [layer_init(nn.Linear(dim_in, dim_out)) for dim_in, dim_out in zip(dims[:-1], dims[1:])])
-        self.final = layer_init(nn.Linear(dims[-1], body.feature_dim * output_dim))
+        self.final = layer_init(nn.Linear(dims[-1], feature_dim * action_dim))
+        self.output_dim = action_dim
+        self.feature_dim = feature_dim
         self.gate = gate
 
     def forward(self, phi):
         for layer in self.layers:
-            psi = self.gate(layer(phi))
-        psi = self.final(psi)
-        psi = psi.view(psi.size(0), self.output_dim, self.body.feature_dim) # shape: b x action_dim x state_dim
+            phi = self.gate(layer(phi))
+        psi = self.final(phi)
+        psi = psi.view(psi.size(0), self.output_dim, self.feature_dim) # shape: b x action_dim x state_dim
         return psi
 
 class VanillaNet(nn.Module, BaseNet):
