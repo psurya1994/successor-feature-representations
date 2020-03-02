@@ -46,9 +46,10 @@ class Phi2Psi(nn.Module):
         self.gate = gate
 
     def forward(self, phi):
+        m = phi
         for layer in self.layers:
-            phi = self.gate(layer(phi))
-        psi = self.final(phi)
+            m = self.gate(layer(m))
+        psi = self.final(m)
         psi = psi.view(psi.size(0), self.output_dim, self.feature_dim) # shape: b x action_dim x state_dim
         return psi
 
