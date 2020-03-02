@@ -28,7 +28,7 @@ class DSRActor(BaseActor):
             self._state = self._task.reset()
         config = self.config
         with config.lock:
-            psi, q_values = self._network(config.state_normalizer(self._state))
+            _, psi, q_values = self._network(config.state_normalizer(self._state))
         q_values = to_np(q_values).flatten()
         if self._total_steps < config.exploration_steps \
                 or np.random.rand() < config.random_action_prob():
@@ -69,7 +69,7 @@ class DSRAgent(BaseAgent):
     def eval_step(self, state):
         self.config.state_normalizer.set_read_only()
         state = self.config.state_normalizer(state)
-        _, q = self.network(state)
+        _, _, q = self.network(state)
         action = to_np(q.argmax(-1))
         self.config.state_normalizer.unset_read_only()
         return action
@@ -96,7 +96,7 @@ class DSRAgent(BaseAgent):
             next_states = self.config.state_normalizer(next_states)
 
             # Computing targets
-            psi_next, q_next = self.target_network(next_states)
+            _, psi_next, q_next = self.target_network(next_states)
             psi_next = psi_next.detach()
             q_next = q_next.detach()
             if self.config.double_q:
@@ -111,11 +111,11 @@ class DSRAgent(BaseAgent):
             q_next = self.config.discount * q_next * (1 - terminals)
             q_next.add_(rewards)
             psi_next = self.config.discount * psi_next * (1 - terminals.unsqueeze(1).repeat(1, psi_next.shape[1]))
-            psi_next.add_(states) # TODO: double chec this
+            psi_next.add_(self.target_network(next_states)[0]) # TODO: double chec this
 
             # Computing estimates
             actions = tensor(actions).long()
-            psi, q = self.network(states)
+            _, psi, q = self.network(states)
             q = q[self.batch_indices, actions]
             psi = psi[self.batch_indices, actions, :]
 

@@ -6,6 +6,7 @@
 
 from .network_utils import *
 from .network_bodies import *
+from torch.nn.parameter import Parameter
 
 class SRNet(nn.Module):
     """
@@ -21,23 +22,16 @@ class SRNet(nn.Module):
         self.layer2 = layer_init(nn.Linear(body.feature_dim, body.feature_dim * output_dim))
         self.gate = gate
         self.feature_dim = body.feature_dim * output_dim
-
-        self.w = layer_init(nn.Linear(body.feature_dim, 1))
+        self.w = Parameter(torch.Tensor(body.feature_dim))
 
     def forward(self, x):
-        x = self.body(tensor(x)) # shape: b x state_dim
-#         import pdb; pdb.set_trace()
-        x = self.gate(self.layer1(x)) # shape: b x state_dim
-        x = self.gate(self.layer2(x)) # shape: b x (state_dim*action_dim)
-        psi = x.view(x.size(0), self.output_dim, self.body.feature_dim) # shape: b x action_dim x state_dim
+        phi = self.body(tensor(x)) # shape: b x state_dim
+        psi = self.gate(self.layer1(phi)) # shape: b x state_dim
+        psi = self.gate(self.layer2(psi)) # shape: b x (state_dim*action_dim)
+        psi = psi.view(psi.size(0), self.output_dim, self.body.feature_dim) # shape: b x action_dim x state_dim
+        out = torch.matmul(psi, self.w)
 
-        y = [] # TODO: better way to do the same
-        for i in range(self.output_dim):
-            y.append(self.w(psi[:, i, :]))
-
-        out = torch.cat((y[0], y[1], y[2], y[3]), 1) #TODO: make this general enough to work with any output_dim
-
-        return psi, out
+        return phi, psi, out
 
 
 class VanillaNet(nn.Module, BaseNet):
