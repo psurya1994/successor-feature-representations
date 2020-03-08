@@ -52,6 +52,30 @@ class Phi2Psi(nn.Module):
         psi = self.final(m)
         psi = psi.view(psi.size(0), self.output_dim, self.feature_dim) # shape: b x action_dim x state_dim
         return psi
+    
+class SRNet_backup(nn.Module):
+    """
+    Added by Surya.
+    SR fully connected body network.
+    """
+    def __init__(self, output_dim, body, gate=F.relu):
+        super(SRNet_backup, self).__init__()
+        self.body = body
+        self.output_dim = output_dim# TODO: check if this is the right way to do it
+        self.layer1 = layer_init(nn.Linear(body.feature_dim, body.feature_dim))
+        self.layer2 = layer_init(nn.Linear(body.feature_dim, body.feature_dim * output_dim))
+        self.gate = gate
+        self.feature_dim = body.feature_dim * output_dim
+        self.w = Parameter(torch.Tensor(body.feature_dim))
+
+    def forward(self, x):
+        phi = self.body(tensor(x)) # shape: b x state_dim
+        psi = self.gate(self.layer1(phi)) # shape: b x state_dim
+        psi = self.gate(self.layer2(psi)) # shape: b x (state_dim*action_dim)
+        psi = psi.view(psi.size(0), self.output_dim, self.body.feature_dim) # shape: b x action_dim x state_dim
+        out = torch.matmul(psi, self.w)
+
+        return phi, psi, out
 
 class VanillaNet(nn.Module, BaseNet):
     def __init__(self, output_dim, body):
