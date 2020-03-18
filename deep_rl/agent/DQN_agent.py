@@ -99,7 +99,7 @@ class DQNAgent(BaseAgent):
             q = self.network(states)
             q = q[self.batch_indices, actions]
             loss = (q_next - q).pow(2).mul(0.5).mean()
-            self.loss_vec.append(loss.info())
+            self.loss_vec.append(loss.item())
             self.optimizer.zero_grad()
             loss.backward()
             nn.utils.clip_grad_norm_(self.network.parameters(), self.config.gradient_clip)

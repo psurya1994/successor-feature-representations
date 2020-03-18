@@ -47,6 +47,10 @@ class DSRAgent(BaseAgent):
         BaseAgent.__init__(self, config)
         self.config = config
         config.lock = mp.Lock()
+        
+        self.loss_q_vec = []
+        self.loss_psi_vec = []
+        self.loss_vec = []
 
         self.replay = config.replay_fn()
         self.actor = DSRActor(config)
@@ -123,6 +127,12 @@ class DSRAgent(BaseAgent):
             loss_q = (q_next - q).pow(2).mul(0.5).mean()
             loss_psi = (psi_next - psi).pow(2).mul(0.5).mean()
             loss = loss_q + config.c * loss_psi
+            
+            self.loss_vec.append(loss.item())
+            self.loss_q_vec.append(loss_q.item())
+            self.loss_psi_vec.append(loss_psi.item())
+            
+            
             self.optimizer.zero_grad()
             loss.backward()
             nn.utils.clip_grad_norm_(self.network.parameters(), self.config.gradient_clip)

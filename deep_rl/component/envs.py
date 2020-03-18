@@ -36,6 +36,9 @@ def make_env(env_id, seed, rank, episode_life=True):
         else:
             if(env_id == "FourRooms"):
                 env = FourRooms()
+            if("FourRooms-Goal" in env_id):
+                _, _, goal=env_id.split('-')
+                env = FourRooms(goal=int(goal))
             else:
                 env = gym.make(env_id)
         is_atari = hasattr(gym.envs, 'atari') and isinstance(

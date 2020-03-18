@@ -12,7 +12,7 @@ import gym
 
 class FourRooms(gym.Env):
 
-	def __init__(self):
+	def __init__(self, goal=62):
 		layout = """\
 wwwwwwwwwwwww
 w     w     w
@@ -54,7 +54,7 @@ wwwwwwwwwwwww
 		self.tocell = {v:k for k, v in self.tostate.items()}
 
 
-		self.goal = 62 # East doorway
+		self.goal = goal # East doorway
 		self.init_states = list(range(self.obs_space.shape[0]))
 		self.init_states.remove(self.goal)
 		self.updates = 0
