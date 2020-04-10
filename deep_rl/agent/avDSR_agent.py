@@ -1,18 +1,7 @@
-#######################################################################
-# Copyright (C) 2017 Shangtong Zhang(zhangshangtong.cpp@gmail.com)    #
-# Permission given to modify the code as long as you keep this        #
-# declaration at the top                                              #
-#######################################################################
-
+import random
 """
 Code for learning the averageSR agent across good policies.
 """
-
-from ..network import *
-from ..component import *
-from ..utils import *
-import time
-from .BaseAgent import *
 
 
 class avDSRActor(BaseActor):
@@ -26,21 +15,38 @@ class avDSRActor(BaseActor):
         if self._state is None:
             self._state = self._task.reset()
         config = self.config
-        with config.lock:
-            _, psi, q_values = self._network(config.state_normalizer(self._state))
-            actions = []
-            for agent in self.agents:
-                _, _, q_values = self._network(config.state_normalizer(self._state))
-                q_values = to_np(q_values).flatten()
-                actions.append(np.argmax(q_values))
 
+        # Choose one of the base agents randomly
+        pick = random.choice(self.agents)
+
+        # Find qvalues of the picked agent for the present state
+        with config.lock:
+            q_values = pick.network(config.state_normalizer(self._state))
+        q_values = to_np(q_values).flatten()
+
+        # Take action based on this estimated q value
         if self._total_steps < config.exploration_steps \
                 or np.random.rand() < config.random_action_prob():
             action = np.random.randint(0, len(q_values))
         else:
             action = np.argmax(q_values)
+            
         next_state, reward, done, info = self._task.step([action])
-        entry = [self._state[0], action, reward[0], next_state[0], int(done[0]), info]
+        
+        # Also estimate next action
+        #############
+        pick2 = random.choice(self.agents)
+        with config.lock:
+            q_values = pick2.network(config.state_normalizer(next_state))
+        q_values = to_np(q_values).flatten()
+
+        if self._total_steps < config.exploration_steps \
+                or np.random.rand() < config.random_action_prob():
+            next_action = np.random.randint(0, len(q_values))
+        else:
+            next_action = np.argmax(q_values)
+        
+        entry = [self._state[0], action, reward[0], next_state[0], next_action, int(done[0]), info]
         self._total_steps += 1
         self._state = next_state
         return entry
@@ -91,18 +97,18 @@ class avDSRAgent(BaseAgent):
         # Store transitions in the buffer
         transitions = self.actor.step()
         experiences = []
-        for state, action, reward, next_state, done, info in transitions:
-            self.record_online_return(info)
+        for state, action, reward, next_state, next_action, done, info in transitions:
+#             self.record_online_return(info)
             self.total_steps += 1
             reward = config.reward_normalizer(reward)
-            experiences.append([state, action, reward, next_state, done])
+            experiences.append([state, action, reward, next_state, next_action, done])
         self.replay.feed_batch(experiences)
 
         # Start updating network parameters after exploration_steps
         if self.total_steps > self.config.exploration_steps:
 #             import pdb; pdb.set_trace()
             experiences = self.replay.sample()
-            states, actions, rewards, next_states, terminals = experiences
+            states, actions, rewards, next_states, next_actions, terminals = experiences
             states = self.config.state_normalizer(states)
             next_states = self.config.state_normalizer(next_states)
 
@@ -114,8 +120,9 @@ class avDSRAgent(BaseAgent):
                 best_actions = torch.argmax(self.network(next_states), dim=-1)
                 q_next = q_next[self.batch_indices, best_actions]
             else:
-                q_next = q_next.max(1)[0]
-                psi_next = psi_next.max(1)[0] # TODO: double check dims here
+                next_actions = tensor(next_actions).long()
+                q_next = q_next[self.batch_indices, next_actions]
+                psi_next = psi_next[self.batch_indices, next_actions, :] # TODO: double check dims here
 
             terminals = tensor(terminals)
             rewards = tensor(rewards)
@@ -133,7 +140,7 @@ class avDSRAgent(BaseAgent):
             # Estimating the loss
             loss_q = (q_next - q).pow(2).mul(0.5).mean()
             loss_psi = (psi_next - psi).pow(2).mul(0.5).mean()
-            loss = loss_q + config.c * loss_psi
+            loss = loss_psi
             
             self.loss_vec.append(loss.item())
             self.loss_q_vec.append(loss_q.item())
