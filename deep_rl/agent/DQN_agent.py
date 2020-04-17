@@ -42,6 +42,8 @@ class DQNAgent(BaseAgent):
         self.config = config
         config.lock = mp.Lock()
 
+        self.returns = []
+        
         self.replay = config.replay_fn()
         self.actor = DQNActor(config)
 
@@ -74,7 +76,14 @@ class DQNAgent(BaseAgent):
         transitions = self.actor.step()
         experiences = []
         for state, action, reward, next_state, done, info in transitions:
-            self.record_online_return(info)
+#             self.record_online_return(info)
+            
+            # Recording train returns in list
+            for i, info_ in enumerate(info):
+                ret = info_['episodic_return']
+                if ret is not None:
+                    self.returns.append([self.total_steps, ret])
+            
             self.total_steps += 1
             reward = config.reward_normalizer(reward)
             experiences.append([state, action, reward, next_state, done])

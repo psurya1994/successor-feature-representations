@@ -12,7 +12,7 @@ import gym
 
 class FourRooms(gym.Env):
 
-	def __init__(self, goal=62):
+	def __init__(self, goal=62, p=0):
 		layout = """\
 wwwwwwwwwwwww
 w     w     w
@@ -28,6 +28,7 @@ w           w
 w     w     w
 wwwwwwwwwwwww
 """
+		self.p = p # Stocasticity the environment
 		self.occupancy = np.array([list(map(lambda c: 1 if c=='w' else 0, line)) for line in layout.splitlines()])
 		
 		# Four possible actions
@@ -98,8 +99,8 @@ wwwwwwwwwwwww
 
 	def step(self, action):
 		'''
-		Takes a step in the environment with 2/3 probability. And takes a step in the
-		other directions with probability 1/3 with all of them being equally likely.
+		Takes a step in the environment with 1-self.p probability. And takes a step in the
+		other directions with probability self.p with all of them being equally likely.
 		'''
 		self.updates += 1
 
@@ -107,7 +108,7 @@ wwwwwwwwwwwww
 
 		if not self.occupancy[next_cell]:
 
-			if self.rng.uniform() < 1/3:
+			if self.rng.uniform() < self.p:
 				available_cells = self.check_available_cells(self.current_cell)
 				self.current_cell = available_cells[self.rng.randint(len(available_cells))]
 

@@ -2,26 +2,35 @@ import random
 """
 Code for learning the averageSR agent across good policies.
 """
-
+from ..network import *
+from ..component import *
+from ..utils import *
+import time
+from .BaseAgent import *
 
 class avDSRActor(BaseActor):
-    def __init__(self, config, agents):
+    def __init__(self, config, agents, style='DQN'):
         BaseActor.__init__(self, config)
         self.config = config
         self.agents = agents
+        self.style = style
         self.start()
 
     def _transition(self):
         if self._state is None:
             self._state = self._task.reset()
         config = self.config
+        
 
         # Choose one of the base agents randomly
         pick = random.choice(self.agents)
 
         # Find qvalues of the picked agent for the present state
         with config.lock:
-            q_values = pick.network(config.state_normalizer(self._state))
+            if(self.style == 'DSR'):
+                _, _, q_values = pick.network(config.state_normalizer(self._state))
+            else:
+                q_values = pick.network(config.state_normalizer(self._state))
         q_values = to_np(q_values).flatten()
 
         # Take action based on this estimated q value
@@ -37,7 +46,10 @@ class avDSRActor(BaseActor):
         #############
         pick2 = random.choice(self.agents)
         with config.lock:
-            q_values = pick2.network(config.state_normalizer(next_state))
+            if(self.style == 'DSR'):
+                _, _, q_values = pick2.network(config.state_normalizer(next_state))
+            else:
+                q_values = pick2.network(config.state_normalizer(next_state))
         q_values = to_np(q_values).flatten()
 
         if self._total_steps < config.exploration_steps \
@@ -53,7 +65,7 @@ class avDSRActor(BaseActor):
 
 
 class avDSRAgent(BaseAgent):
-    def __init__(self, config, agents):
+    def __init__(self, config, agents, style='DQN'):
         """
         agents -> list of agents whose actions we need to consider.
         """
@@ -66,18 +78,16 @@ class avDSRAgent(BaseAgent):
         self.loss_vec = []
 
         self.replay = config.replay_fn()
-        self.actor = avDSRActor(config, agents)
+        self.actor = avDSRActor(config, agents, style)
 
         self.network = config.network_fn()
         self.network.share_memory()
-        self.target_network = config.network_fn()
-        self.target_network.load_state_dict(self.network.state_dict())
         self.optimizer = config.optimizer_fn(self.network.parameters())
 
         self.actor.set_network(self.network)
 
         self.total_steps = 0
-        self.batch_indices = range_tensor(self.replay.batch_size)
+        self.batch_indices = range_tensor(self.replay.batch_size) # Need to make this size bigger
 
     def close(self):
         close_obj(self.replay)
@@ -106,54 +116,48 @@ class avDSRAgent(BaseAgent):
 
         # Start updating network parameters after exploration_steps
         if self.total_steps > self.config.exploration_steps:
-#             import pdb; pdb.set_trace()
+
+            # Getting samples from buffer
             experiences = self.replay.sample()
             states, actions, rewards, next_states, next_actions, terminals = experiences
             states = self.config.state_normalizer(states)
             next_states = self.config.state_normalizer(next_states)
 
-            # Computing targets
-            _, psi_next, q_next = self.target_network(next_states)
+            # Estimate targets
+            with torch.no_grad():
+                _, psi_next, _ = self.network(next_states)
             psi_next = psi_next.detach()
-            q_next = q_next.detach()
             if self.config.double_q:
                 best_actions = torch.argmax(self.network(next_states), dim=-1)
                 q_next = q_next[self.batch_indices, best_actions]
             else:
                 next_actions = tensor(next_actions).long()
-                q_next = q_next[self.batch_indices, next_actions]
                 psi_next = psi_next[self.batch_indices, next_actions, :] # TODO: double check dims here
 
             terminals = tensor(terminals)
-            rewards = tensor(rewards)
-            q_next = self.config.discount * q_next * (1 - terminals)
-            q_next.add_(rewards)
             psi_next = self.config.discount * psi_next * (1 - terminals.unsqueeze(1).repeat(1, psi_next.shape[1]))
-            psi_next.add_(self.target_network(next_states)[0]) # TODO: double chec this
-
+            psi_next.add_(self.network(states)[0]) # TODO: double chec this
             # Computing estimates
             actions = tensor(actions).long()
-            _, psi, q = self.network(states)
-            q = q[self.batch_indices, actions]
+            _, psi, _ = self.network(states)
             psi = psi[self.batch_indices, actions, :]
-
-            # Estimating the loss
-            loss_q = (q_next - q).pow(2).mul(0.5).mean()
+            
+            
+#             loss_psi = (psi_next - psi).pow(2).mul(0.5).mean(0)
             loss_psi = (psi_next - psi).pow(2).mul(0.5).mean()
+
             loss = loss_psi
             
-            self.loss_vec.append(loss.item())
-            self.loss_q_vec.append(loss_q.item())
-            self.loss_psi_vec.append(loss_psi.item())
+            total_loss = loss.mean()
+            self.loss_vec.append(total_loss.item())
+            self.loss_psi_vec.append(total_loss.item())
             
             
             self.optimizer.zero_grad()
+#             loss.backward(torch.ones(loss.shape))
             loss.backward()
+
             nn.utils.clip_grad_norm_(self.network.parameters(), self.config.gradient_clip)
 
             with config.lock:
                 self.optimizer.step()
-
-        if self.total_steps / self.config.sgd_update_frequency % \
-                self.config.target_network_update_freq == 0:
-            self.target_network.load_state_dict(self.network.state_dict())

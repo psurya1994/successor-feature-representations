@@ -7,7 +7,6 @@
 """
 DQN code modified to convert it to DSR by Surya.
 The representations are not learned in this network.
-
 """
 
 from ..network import *
@@ -36,6 +35,7 @@ class DSRActor(BaseActor):
         else:
             action = np.argmax(q_values)
         next_state, reward, done, info = self._task.step([action])
+        
         entry = [self._state[0], action, reward[0], next_state[0], int(done[0]), info]
         self._total_steps += 1
         self._state = next_state
@@ -51,6 +51,7 @@ class DSRAgent(BaseAgent):
         self.loss_q_vec = []
         self.loss_psi_vec = []
         self.loss_vec = []
+        self.returns = []
 
         self.replay = config.replay_fn()
         self.actor = DSRActor(config)
@@ -60,6 +61,7 @@ class DSRAgent(BaseAgent):
         self.target_network = config.network_fn()
         self.target_network.load_state_dict(self.network.state_dict())
         self.optimizer = config.optimizer_fn(self.network.parameters())
+        self.w_optimizer = config.optimizer_fn(self.network.psi2q.parameters()) # only on w's
 
         self.actor.set_network(self.network)
 
@@ -85,17 +87,33 @@ class DSRAgent(BaseAgent):
         transitions = self.actor.step()
         experiences = []
         for state, action, reward, next_state, done, info in transitions:
-            self.record_online_return(info)
+
+            # Reporting training progress on stdout
+            # self.record_online_return(info)
+            
+            # Recording train returns in list
+            for i, info_ in enumerate(info):
+                ret = info_['episodic_return']
+                if ret is not None:
+                    self.returns.append([self.total_steps, ret])
+                    
             self.total_steps += 1
             reward = config.reward_normalizer(reward)
+
+            # Putting these new entries in experiences
             experiences.append([state, action, reward, next_state, done])
+
+        # Add experiences to replay
         self.replay.feed_batch(experiences)
 
         # Start updating network parameters after exploration_steps
         if self.total_steps > self.config.exploration_steps:
-#             import pdb; pdb.set_trace()
+
+            # Sampling from replay buffer
             experiences = self.replay.sample()
             states, actions, rewards, next_states, terminals = experiences
+
+            # Normalizing stat values
             states = self.config.state_normalizer(states)
             next_states = self.config.state_normalizer(next_states)
 
@@ -107,15 +125,21 @@ class DSRAgent(BaseAgent):
                 best_actions = torch.argmax(self.network(next_states), dim=-1)
                 q_next = q_next[self.batch_indices, best_actions]
             else:
-                q_next = q_next.max(1)[0]
-                psi_next = psi_next.max(1)[0] # TODO: double check dims here
+                q_next = q_next.max(1) # predicts max q values (vector of b) and corresponding arguments
+                a_star = q_next[1]
+                q_next = q_next[0]
+                psi_next = psi_next[self.batch_indices, a_star, :]
 
             terminals = tensor(terminals)
             rewards = tensor(rewards)
+
+            # Estimate q target
             q_next = self.config.discount * q_next * (1 - terminals)
             q_next.add_(rewards)
+
+            # Estimate psi target (obtained from target n/w) # CHECK: should we get target from network instead?
             psi_next = self.config.discount * psi_next * (1 - terminals.unsqueeze(1).repeat(1, psi_next.shape[1]))
-            psi_next.add_(self.target_network(next_states)[0]) # TODO: double chec this
+            psi_next.add_(self.target_network(next_states)[0]) # Adding the prediction for present state.
 
             # Computing estimates
             actions = tensor(actions).long()
@@ -125,20 +149,47 @@ class DSRAgent(BaseAgent):
 
             # Estimating the loss
             loss_q = (q_next - q).pow(2).mul(0.5).mean()
-            loss_psi = (psi_next - psi).pow(2).mul(0.5).mean()
-            loss = loss_q + config.c * loss_psi
+            loss_psi = config.c * (psi_next - psi).pow(2).mul(0.5).mean()
+            loss = loss_q + loss_psi
             
+            # Storing loss estimates
             self.loss_vec.append(loss.item())
             self.loss_q_vec.append(loss_q.item())
             self.loss_psi_vec.append(loss_psi.item())
             
+            if(not np.isfinite(loss.item())):
+                print(' loss has diverged!')
+                import pdb;pdb.set_trace()
+                return 
             
-            self.optimizer.zero_grad()
-            loss.backward()
-            nn.utils.clip_grad_norm_(self.network.parameters(), self.config.gradient_clip)
-
-            with config.lock:
-                self.optimizer.step()
+            if(config.freeze == 1):
+                # Update all based on loss_psi
+                self.optimizer.zero_grad()
+                loss_psi.backward(retain_graph=True)
+                nn.utils.clip_grad_norm_(self.network.parameters(), self.config.gradient_clip)
+                with config.lock:
+                    self.optimizer.step()
+                    
+                # Update only w parameters based on loss_q
+                self.w_optimizer.zero_grad()
+                loss_q.backward()
+                nn.utils.clip_grad_norm_(self.network.parameters(), self.config.gradient_clip)
+                with config.lock:
+                    self.w_optimizer.step()
+            elif(config.freeze == 2):
+                # Update only w parameters based on loss_q
+                self.w_optimizer.zero_grad()
+                loss_q.backward()
+                nn.utils.clip_grad_norm_(self.network.parameters(), self.config.gradient_clip)
+                with config.lock:
+                    self.w_optimizer.step()
+            else: # freeze = 0
+                 # Update all params based on whole loss
+                self.optimizer.zero_grad()
+                loss.backward(retain_graph=True)
+                nn.utils.clip_grad_norm_(self.network.parameters(), self.config.gradient_clip)
+                with config.lock:
+                    self.optimizer.step()
 
         if self.total_steps / self.config.sgd_update_frequency % \
                 self.config.target_network_update_freq == 0:

@@ -1,5 +1,6 @@
 from .DQN_agent import *
-from .DSR_agent_v2 import *
+from .DSR_agent import *
+from .avDSR_agent import *
 from .DDPG_agent import *
 from .A2C_agent import *
 from .CategoricalDQN_agent import *
