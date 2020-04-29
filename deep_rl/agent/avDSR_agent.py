@@ -29,7 +29,7 @@ class avDSRActor(BaseActor):
         with config.lock:
             if(self.style == 'DSR'):
                 _, _, q_values = pick.network(config.state_normalizer(self._state))
-            else:
+            elif(self.style == 'DQN'):
                 q_values = pick.network(config.state_normalizer(self._state))
         q_values = to_np(q_values).flatten()
 
@@ -48,7 +48,7 @@ class avDSRActor(BaseActor):
         with config.lock:
             if(self.style == 'DSR'):
                 _, _, q_values = pick2.network(config.state_normalizer(next_state))
-            else:
+            elif(self.style=='DQN'):
                 q_values = pick2.network(config.state_normalizer(next_state))
         q_values = to_np(q_values).flatten()
 

@@ -9,13 +9,29 @@ from .network_bodies import *
 from torch.nn.parameter import Parameter
 
 class Psi2QNet(nn.Module):
-    def __init__(self, feature_dim):
+    def __init__(self, output_dim, feature_dim):
         super(Psi2QNet, self).__init__()
         self.w = Parameter(torch.Tensor(feature_dim))
         nn.init.constant_(self.w, 0) # CHECK for better initialization
     
     def forward(self, psi):
         return torch.matmul(psi, self.w)
+
+class Psi2QNetFC(nn.Module):
+    def __init__(self, output_dim, feature_dim, hidden_units=(), gate=F.relu):
+        super(Psi2QNetFC, self).__init__()
+
+        dims = (feature_dim*output_dim,) + hidden_units + (output_dim,)
+        self.layers = nn.ModuleList(
+            [layer_init_0(nn.Linear(dim_in, dim_out)) for dim_in, dim_out in zip(dims[:-1], dims[1:])])
+        self.gate = gate
+    
+    def forward(self, psi):
+        out = psi.view(psi.size(0), -1)
+        for layer in self.layers[:-1]:
+            out = self.gate(layer(out))
+        out = self.layers[-1](out)
+        return out
 
 class SRNet(nn.Module):
     """
@@ -28,11 +44,11 @@ class SRNet(nn.Module):
         self.output_dim = output_dim# TODO: check if this is the right way to do it
         dims = (body.feature_dim,) + hidden_units + (body.feature_dim * output_dim,)
         self.layers = nn.ModuleList(
-            [layer_init(nn.Linear(dim_in, dim_out)) for dim_in, dim_out in zip(dims[:-1], dims[1:])])
+            [layer_init_0(nn.Linear(dim_in, dim_out)) for dim_in, dim_out in zip(dims[:-1], dims[1:])])
         
         self.gate = gate
         self.feature_dim = body.feature_dim * output_dim
-        self.psi2q = Psi2QNet(body.feature_dim)
+        self.psi2q = Psi2QNet(output_dim, body.feature_dim)
 
     def forward(self, x):
         phi = self.body(tensor(x)) # shape: b x state_dim

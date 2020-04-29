@@ -21,3 +21,8 @@ def layer_init(layer, w_scale=1.0):
     layer.weight.data.mul_(w_scale)
     nn.init.constant_(layer.bias.data, 0)
     return layer
+
+def layer_init_0(layer):
+	layer.weight.data.fill_(0)
+	layer.bias.data.fill_(0)
+	return layer

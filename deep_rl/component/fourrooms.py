@@ -67,7 +67,7 @@ wwwwwwwwwwwww
 		current_grid[self.current_cell[0], self.current_cell[1]] = -1
 		if show_goal:
 			goal_cell = self.tocell[self.goal]
-			current_grid[goal_cell[0], goal_cell[1]] = -1
+			current_grid[goal_cell[0], goal_cell[1]] = -2
 		return current_grid
 
 	def seed(self, seed=None):
@@ -79,6 +79,7 @@ wwwwwwwwwwwww
 
 	def reset(self):
 		state = self.rng.choice(self.init_states)
+		# state = 0 # fix starting state
 		self.current_cell = self.tocell[state]
 		temp = np.zeros(len(self.obs_space))
 		temp[state] = 1
