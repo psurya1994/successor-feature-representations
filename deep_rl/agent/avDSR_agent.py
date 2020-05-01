@@ -14,6 +14,12 @@ class avDSRActor(BaseActor):
         self.config = config
         self.agents = agents
         self.style = style
+
+        # Parameters to decide which agents should learn
+        self.batch_steps = 0
+        self.switch_period = 10
+        self.agent_id = 0
+
         self.start()
 
     def _transition(self):
@@ -21,9 +27,11 @@ class avDSRActor(BaseActor):
             self._state = self._task.reset()
         config = self.config
         
-
-        # Choose one of the base agents randomly
-        pick = random.choice(self.agents)
+        self.batch_steps += 1
+        if(self.batch_steps % self.switch_period == 0): 
+            # CHECK: multiprocessing might be screwing something up
+            self.agent_id = np.random.randint(len(self.agents))
+        pick = self.agents[self.agent_id]
 
         # Find qvalues of the picked agent for the present state
         with config.lock:
@@ -44,7 +52,7 @@ class avDSRActor(BaseActor):
         
         # Also estimate next action
         #############
-        pick2 = random.choice(self.agents)
+        pick2 = pick
         with config.lock:
             if(self.style == 'DSR'):
                 _, _, q_values = pick2.network(config.state_normalizer(next_state))
@@ -126,7 +134,7 @@ class avDSRAgent(BaseAgent):
             # Estimate targets
             with torch.no_grad():
                 _, psi_next, _ = self.network(next_states)
-            psi_next = psi_next.detach()
+
             if self.config.double_q:
                 best_actions = torch.argmax(self.network(next_states), dim=-1)
                 q_next = q_next[self.batch_indices, best_actions]
@@ -136,10 +144,11 @@ class avDSRAgent(BaseAgent):
 
             terminals = tensor(terminals)
             psi_next = self.config.discount * psi_next * (1 - terminals.unsqueeze(1).repeat(1, psi_next.shape[1]))
-            psi_next.add_(self.network(states)[0]) # TODO: double chec this
+            phi, psi, _ = self.network(states)
+            psi_next.add_(phi) # TODO: double chec this
+
             # Computing estimates
             actions = tensor(actions).long()
-            _, psi, _ = self.network(states)
             psi = psi[self.batch_indices, actions, :]
             
             
