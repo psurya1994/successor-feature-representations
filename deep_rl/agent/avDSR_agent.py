@@ -9,11 +9,18 @@ import time
 from .BaseAgent import *
 
 class avDSRActor(BaseActor):
-    def __init__(self, config, agents, style='DQN'):
+    def __init__(self, config, agents, style='DQN', choice=1):
+        """
+        style -> depicts the network config of the agent used for exploration.
+        choice -> tells how we choose which agent to use for exploration
+            0 - at every timestep, we randomly pick and agent and take an eps greedy action
+            1 - we choose a new DQN every switch_period
+        """
         BaseActor.__init__(self, config)
         self.config = config
         self.agents = agents
         self.style = style
+        self.choice = choice
 
         # Parameters to decide which agents should learn
         self.batch_steps = 0
@@ -27,11 +34,17 @@ class avDSRActor(BaseActor):
             self._state = self._task.reset()
         config = self.config
         
-        self.batch_steps += 1
-        if(self.batch_steps % self.switch_period == 0): 
-            # CHECK: multiprocessing might be screwing something up
-            self.agent_id = np.random.randint(len(self.agents))
-        pick = self.agents[self.agent_id]
+        # Choosing which agent for taking actions
+        if(self.choice == 0):
+            pick = random.choice(self.agents)
+        elif(self.choice == 1):
+            self.batch_steps += 1
+            if(self.batch_steps % self.switch_period == 0): 
+                # CHECK: multiprocessing might be screwing something up
+                self.agent_id = np.random.randint(len(self.agents))
+            pick = self.agents[self.agent_id]
+        else:
+            raise NameError('Invalid choice config')
 
         # Find qvalues of the picked agent for the present state
         with config.lock:
@@ -52,7 +65,11 @@ class avDSRActor(BaseActor):
         
         # Also estimate next action
         #############
-        pick2 = pick
+        if(self.choice == 0):
+            pick2 = random.choice(self.agents)
+        elif(self.choice == 1):
+            pick2 = pick
+
         with config.lock:
             if(self.style == 'DSR'):
                 _, _, q_values = pick2.network(config.state_normalizer(next_state))
@@ -86,7 +103,8 @@ class avDSRAgent(BaseAgent):
         self.loss_vec = []
 
         self.replay = config.replay_fn()
-        self.actor = avDSRActor(config, agents, style)
+        self.choice = config.choice
+        self.actor = avDSRActor(config, agents, style, self.choice)
 
         self.network = config.network_fn()
         self.network.share_memory()

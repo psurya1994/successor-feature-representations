@@ -15,7 +15,7 @@ from baselines.common.atari_wrappers import make_atari, wrap_deepmind
 from baselines.common.atari_wrappers import FrameStack as FrameStack_
 from baselines.common.vec_env.subproc_vec_env import SubprocVecEnv, VecEnv
 
-from .fourrooms import FourRooms
+from .fourrooms import *
 from .lineworld import LineWorld
 
 from ..utils import *
@@ -35,13 +35,26 @@ def make_env(env_id, seed, rank, episode_life=True):
             _, domain, task = env_id.split('-')
             env = dm_control2gym.make(domain_name=domain, task_name=task)
         else:
-            if(env_id == "FourRooms"):
+
+            # Writing cases for FourRoomsMatrix
+            if(env_id == "FourRoomsMatrix"):
+                env = FourRoomsMatrix()
+            elif("FourRoomsMatrix-Goal" in env_id):
+                _, _, goal=env_id.split('-')
+                env = FourRoomsMatrix(goal=int(goal))
+
+            # Writing cases for FourRooms
+            elif(env_id == "FourRooms"):
                 env = FourRooms()
             elif("FourRooms-Goal" in env_id):
                 _, _, goal=env_id.split('-')
                 env = FourRooms(goal=int(goal))
+
+            # Writing cases for LineWorld
             elif(env_id == "LineWorld"):
                 env = LineWorld()
+
+            # For everything else
             else:
                 env = gym.make(env_id)
         is_atari = hasattr(gym.envs, 'atari') and isinstance(
