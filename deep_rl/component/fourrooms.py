@@ -83,6 +83,14 @@ wwwwwwwwwwwww
             current_grid[goal_cell[0], goal_cell[1]] = -2
         return current_grid
 
+    def render_state(self):
+        occupancy = self.occupancy * 0.01
+        current_grid = np.array(occupancy)
+        current_grid[self.current_cell[0], self.current_cell[1]] = 1
+        goal_cell = self.tocell[self.goal]
+        current_grid[goal_cell[0], goal_cell[1]] = -0.01
+        return current_grid
+
     def seed(self, seed=None):
         """
         Setting the seed of the agent for replication
@@ -102,7 +110,7 @@ wwwwwwwwwwwww
             temp[state] = 1
             return temp
         elif(self.config == 2):
-            return self.render().flatten()
+            return self.render_state().flatten()
         else:
             raise
             
@@ -158,7 +166,7 @@ wwwwwwwwwwwww
             temp[state] = 1
             return temp, reward, done, {}
         elif(self.config == 2):
-            return self.render().flatten(), reward, done, {}
+            return self.render_state().flatten(), reward, done, {}
 
 class FourRoomsMatrix(FourRooms):
     def __init__(self, goal=62, p=0):
@@ -209,7 +217,7 @@ class FourRoomsNoTerm(FourRooms):
             temp[state] = 1
             return temp, reward, done, {}
         elif(self.config == 2):
-            return self.render().flatten(), reward, done, {}
+            return self.render_state().flatten(), reward, done, {}
 
 
 
