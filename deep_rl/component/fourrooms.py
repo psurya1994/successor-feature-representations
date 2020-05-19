@@ -163,3 +163,51 @@ wwwwwwwwwwwww
 class FourRoomsMatrix(FourRooms):
     def __init__(self, goal=62, p=0):
         FourRooms.__init__(self, goal=goal, p=p, config=2)
+
+
+class FourRoomsNoTerminal(FourRooms):
+    """
+    Environment with no terminal state but with a probability of dying.
+
+    """
+    def __init__(self, p=0, dying=0.01):
+        FourRooms.__init__(self, goal=goal, p=p, config=1)
+        self.dying = dying
+
+    def render(self):
+        return FourRooms.render(self, show_goal=False)
+
+    def step(self, action):
+        '''
+        Takes a step in the environment with 1-self.p probability. And takes a step in the
+        other directions with probability self.p with all of them being equally likely.
+        '''
+        self.updates += 1
+        reward = 0 # reward is always 0
+
+        next_cell = tuple(self.current_cell + self.directions[action])
+
+        if not self.occupancy[next_cell]:
+
+            if self.rng.uniform() < self.p:
+                available_cells = self.check_available_cells(self.current_cell)
+                self.current_cell = available_cells[self.rng.randint(len(available_cells))]
+            else:
+                self.current_cell = next_cell
+
+        state = self.tostate[self.current_cell]
+
+        if(self.rng.uniform() < self.dying): # randomly check if the agent dies
+            done = 1
+
+        if(self.config == 0):
+            return state, reward, done, {}
+        elif(self.config == 1):
+            temp = np.zeros(len(self.obs_space))
+            temp[state] = 1
+            return temp, reward, done, {}
+        elif(self.config == 2):
+            return self.render().flatten(), reward, done, {}
+
+
+

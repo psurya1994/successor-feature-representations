@@ -38,7 +38,12 @@ class SRNet(nn.Module):
     Added by Surya.
     SR fully connected body network.
     """
-    def __init__(self, output_dim, body, hidden_units=(), gate=F.relu):
+    def __init__(self, output_dim, body, hidden_units=(), gate=F.relu, config=1):
+        """
+        config -> type of learning on top of state abstraction
+            0 - typical SR with weights sharing
+            1 - learning SR without weights sharing
+        """
         super(SRNet, self).__init__()
         self.body = body
         self.output_dim = output_dim# TODO: check if this is the right way to do it
@@ -48,7 +53,10 @@ class SRNet(nn.Module):
         
         self.gate = gate
         self.feature_dim = body.feature_dim * output_dim
-        self.psi2q = Psi2QNet(output_dim, body.feature_dim)
+        if(config == 0):
+            self.psi2q = Psi2QNet(output_dim, body.feature_dim)
+        if(config == 1):
+            self.psi2q = Psi2QNetFC(output_dim, body.feature_dim)
 
     def forward(self, x):
         phi = self.body(tensor(x)) # shape: b x state_dim
