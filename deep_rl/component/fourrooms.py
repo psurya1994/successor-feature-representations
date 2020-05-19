@@ -170,7 +170,7 @@ class FourRoomsNoTerm(FourRooms):
     Environment with no terminal state but with a probability of dying.
 
     """
-    def __init__(self, p=0, dying=0.01):
+    def __init__(self, p=0, dying=0):
         FourRooms.__init__(self, p=p, config=1)
         self.dying = dying
 
