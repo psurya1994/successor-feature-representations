@@ -165,13 +165,13 @@ class FourRoomsMatrix(FourRooms):
         FourRooms.__init__(self, goal=goal, p=p, config=2)
 
 
-class FourRoomsNoTerminal(FourRooms):
+class FourRoomsNoTerm(FourRooms):
     """
     Environment with no terminal state but with a probability of dying.
 
     """
     def __init__(self, p=0, dying=0.01):
-        FourRooms.__init__(self, goal=goal, p=p, config=1)
+        FourRooms.__init__(self, p=p, config=1)
         self.dying = dying
 
     def render(self):
@@ -199,6 +199,8 @@ class FourRoomsNoTerminal(FourRooms):
 
         if(self.rng.uniform() < self.dying): # randomly check if the agent dies
             done = 1
+        else:
+            done = 0
 
         if(self.config == 0):
             return state, reward, done, {}

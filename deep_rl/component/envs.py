@@ -50,6 +50,9 @@ def make_env(env_id, seed, rank, episode_life=True):
                 _, _, goal=env_id.split('-')
                 env = FourRooms(goal=int(goal))
 
+            elif(env_id == "FourRoomsNoTerm"):
+                env = FourRoomsNoTerm()
+
             # Writing cases for LineWorld
             elif(env_id == "LineWorld"):
                 env = LineWorld()
