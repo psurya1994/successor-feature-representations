@@ -221,5 +221,5 @@ class FourRoomsNoTerm(FourRooms):
 
 
 class FourRoomsMatrixNoTerm(FourRoomsNoTerm):
-    def __init__(self, p=0, dying=0):
+    def __init__(self, p=0, dying=0.01):
         FourRoomsNoTerm.__init__(self, p=p, dying=dying, config=2)
