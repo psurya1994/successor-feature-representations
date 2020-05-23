@@ -52,6 +52,8 @@ def make_env(env_id, seed, rank, episode_life=True):
 
             elif(env_id == "FourRoomsNoTerm"):
                 env = FourRoomsNoTerm()
+            elif(env_id == "FourRoomsMatrixNoTerm"):
+                env = FourRoomsMatrixNoTerm()
 
             # Writing cases for LineWorld
             elif(env_id == "LineWorld"):
