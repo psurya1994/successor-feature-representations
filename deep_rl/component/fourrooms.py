@@ -12,14 +12,15 @@ import gym
 
 class FourRooms(gym.Env):
 
-    def __init__(self, goal=62, p=0, config=1):
+    def __init__(self, goal=62, p=0, config=1, layout='3rooms'):
         """
         config -> configouration of the state space
             0 - returns tabular index of the state
             1 - returns one hot encoded vector of the state
             2 - returns matrix form of the state
         """
-        layout = """\
+        if(layout == '4rooms'):
+            layout = """\
 wwwwwwwwwwwww
 w     w     w
 w     w     w
@@ -34,6 +35,56 @@ w           w
 w     w     w
 wwwwwwwwwwwww
 """
+        elif(layout == '3rooms'):
+            layout = """\
+wwwwwwwwwwwww
+w   w   w   w
+w   w       w
+w   w   w   w
+w   w   w   w
+w   w   w   w
+w   w   w   w
+w   w   w   w
+w   w   w   w
+w       w   w
+w   w   w   w
+w   w   w   w
+wwwwwwwwwwwww
+"""
+        elif(layout == 'maze'):
+            layout = """\
+wwwwwwwwwwwww
+w           w
+w ww wwwwww w
+w w       w w
+w w wwwww w w
+w w w   w w w
+w w   w   www
+w w w   w w w
+w w wwwww w w
+w w       w w
+w ww wwwwww w
+w           w
+wwwwwwwwwwwww
+"""
+        elif(layout == 'open'):
+            layout = """\
+wwwwwwwwwwwww
+w           w
+w           w
+w           w
+w           w
+w           w
+w           w
+w           w
+w           w
+w           w
+w           w
+w           w
+wwwwwwwwwwwww
+"""
+        else:
+            raise
         self.p = p # Stocasticity the environment
         self.config = config
         self.occupancy = np.array([list(map(lambda c: 1 if c=='w' else 0, line)) for line in layout.splitlines()])
