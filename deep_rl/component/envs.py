@@ -15,7 +15,7 @@ from baselines.common.atari_wrappers import make_atari, wrap_deepmind
 from baselines.common.atari_wrappers import FrameStack as FrameStack_
 from baselines.common.vec_env.subproc_vec_env import SubprocVecEnv, VecEnv
 
-from .fourrooms import *
+from .fourrooms_dynamic import *
 from .lineworld import LineWorld
 
 from ..utils import *
