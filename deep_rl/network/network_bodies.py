@@ -66,7 +66,6 @@ class DDPGConvBody(nn.Module):
         y = y.view(y.size(0), -1)
         return y
 
-
 class FCBody(nn.Module):
     def __init__(self, state_dim, hidden_units=(64, 64), gate=F.relu):
         super(FCBody, self).__init__()

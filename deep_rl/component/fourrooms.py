@@ -12,7 +12,7 @@ import gym
 
 class FourRooms(gym.Env):
 
-    def __init__(self, goal=62, p=0, config=1, layout='3rooms'):
+    def __init__(self, goal=62, p=0, config=1, layout='4rooms'):
         """
         config -> configouration of the state space
             0 - returns tabular index of the state

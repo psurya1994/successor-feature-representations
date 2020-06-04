@@ -15,8 +15,9 @@ from baselines.common.atari_wrappers import make_atari, wrap_deepmind
 from baselines.common.atari_wrappers import FrameStack as FrameStack_
 from baselines.common.vec_env.subproc_vec_env import SubprocVecEnv, VecEnv
 
-from .fourrooms_dynamic import *
+from .fourrooms import * # CHECK
 from .lineworld import LineWorld
+from .memory_lineworld import *
 
 from ..utils import *
 
@@ -58,6 +59,10 @@ def make_env(env_id, seed, rank, episode_life=True):
             # Writing cases for LineWorld
             elif(env_id == "LineWorld"):
                 env = LineWorld()
+
+            elif(env_id == "MemoryLineWorld"):
+                env = MemoryLineWorld()
+
 
             # For everything else
             else:

@@ -33,6 +33,58 @@ class Psi2QNetFC(nn.Module):
         out = self.layers[-1](out)
         return out
 
+class SRNetWithReconstruction(nn.Module):
+    def __init__(self, output_dim, body, hidden_units_sr=(), hidden_units_rec=(), gate=F.relu, config=1):
+        """
+        This network has two heads: SR head (SR) and reconstruction head (rec).
+        config -> type of learning on top of state abstraction
+            0 - typical SR with weights sharing
+            1 - learning SR without weights sharing
+        """
+        super(SRNet, self).__init__()
+        self.body = body
+        self.output_dim = output_dim
+        self.gate = gate
+
+        dims_sr = (body.feature_dim,) + hidden_units_sr + (body.feature_dim * output_dim,)
+        dims_rec = (body.feature_dim,) + hidden_units_rec + (body.state_dim,) # this doesn't work for conv layers
+
+        # layers for SR
+        self.layers_sr = nn.ModuleList(
+            [layer_init_0(nn.Linear(dim_in, dim_out)) for dim_in, dim_out in zip(dims_sr[:-1], dims_sr[1:])])
+        
+        # layers for reconstruction
+        self.layers_rec = nn.ModuleList(
+            [layer_init_0(nn.Linear(dim_in, dim_out)) for dim_in, dim_out in zip(dims_rec[:-1], dims_rec[1:])])
+
+        # SR final head layer
+        if(config == 0):
+            self.psi2q = Psi2QNet(output_dim, body.feature_dim)
+        if(config == 1):
+            self.psi2q = Psi2QNetFC(output_dim, body.feature_dim)
+
+    def forward(self, x):
+
+        # Finding the latent layer
+        phi = self.body(tensor(x)) # shape: b x state_dim
+
+        # Estimating the SR from the latent layer
+        psi = phi
+        for layer in self.layers_sr[:-1]:
+            psi = self.gate(layer(psi))
+        psi = self.layers_sr[-1](psi)
+        psi = psi.view(psi.size(0), self.output_dim, self.body.feature_dim) # shape: b x action_dim x state_dim
+        q_est = self.psi2q(psi)
+
+        # Reconstructing the state from the latent layer    
+        psi = phi
+        for layer in self.layers_rec[:-1]:
+            psi = self.gate(layer(psi))
+        state_est = self.layers_rec[-1](psi)
+
+
+        return phi, psi, state_est, q_est
+
 class SRNet(nn.Module):
     """
     Added by Surya.
