@@ -33,15 +33,72 @@ class Psi2QNetFC(nn.Module):
         out = self.layers[-1](out)
         return out
 
+class SRNetCNN(nn.Module):
+    """
+    Added by Surya.
+    SR fully connected body network.
+    """
+    def __init__(self, output_dim, body, hidden_units=(100,), gate=F.relu, config=1):
+        """
+        config -> type of learning on top of state abstraction
+            0 - typical SR with weights sharing
+            1 - learning SR without weights sharing
+        """
+        super(SRNetCNN, self).__init__()
+        self.body = body
+        self.output_dim = output_dim
+        self.width = int(np.sqrt(body.feature_dim))
+
+        # CNN layers
+        self.conv1 = nn.Conv2d(1, 32, 3, 1)
+        self.conv2 = nn.Conv2d(32, 64, 3, 1)
+        self.fc_size = 64 * ((self.width - (3-1)*2) // 2) ** 2
+
+        # FC layers
+        dims = (self.fc_size,) + hidden_units + (body.feature_dim * output_dim,)
+        self.layers = nn.ModuleList(
+            [layer_init(nn.Linear(dim_in, dim_out)) for dim_in, dim_out in zip(dims[:-1], dims[1:])])
+        
+        self.gate = gate
+        self.feature_dim = body.feature_dim * output_dim
+        if(config == 0):
+            self.psi2q = Psi2QNet(output_dim, body.feature_dim)
+        if(config == 1):
+            self.psi2q = Psi2QNetFC(output_dim, body.feature_dim)
+
+    def forward(self, x):
+        phi = self.body(tensor(x)) # shape: b x state_dim
+        psi = phi
+
+        # Convert to image
+        psi = psi.view(phi.size(0), 1, self.width, self.width)
+
+        # Conv layers
+        psi = self.conv1(psi)
+        psi = F.relu(psi)
+        psi = self.conv2(psi)
+        psi = F.relu(psi)
+        psi = F.max_pool2d(psi, 2)
+        psi = torch.flatten(psi, 1)
+
+        # FC layers
+        for layer in self.layers[:-1]:
+            psi = self.gate(layer(psi))
+        psi = self.layers[-1](psi)
+        psi = psi.view(psi.size(0), self.output_dim, self.body.feature_dim) # shape: b x action_dim x state_dim
+        out = self.psi2q(psi)
+
+        return phi, psi, out
+
 class SRNetWithReconstruction(nn.Module):
-    def __init__(self, output_dim, body, hidden_units_sr=(), hidden_units_rec=(), gate=F.relu, config=1):
+    def __init__(self, output_dim, body, hidden_units_sr=(64,64), hidden_units_rec=(64,64), hidden_units_psi2q=(), gate=F.relu, config=1):
         """
         This network has two heads: SR head (SR) and reconstruction head (rec).
         config -> type of learning on top of state abstraction
             0 - typical SR with weights sharing
             1 - learning SR without weights sharing
         """
-        super(SRNet, self).__init__()
+        super(SRNetWithReconstruction, self).__init__()
         self.body = body
         self.output_dim = output_dim
         self.gate = gate
@@ -61,7 +118,7 @@ class SRNetWithReconstruction(nn.Module):
         if(config == 0):
             self.psi2q = Psi2QNet(output_dim, body.feature_dim)
         if(config == 1):
-            self.psi2q = Psi2QNetFC(output_dim, body.feature_dim)
+            self.psi2q = Psi2QNetFC(output_dim, body.feature_dim, hidden_units=hidden_units_psi2q)
 
     def forward(self, x):
 
@@ -77,10 +134,10 @@ class SRNetWithReconstruction(nn.Module):
         q_est = self.psi2q(psi)
 
         # Reconstructing the state from the latent layer    
-        psi = phi
+        k = phi
         for layer in self.layers_rec[:-1]:
-            psi = self.gate(layer(psi))
-        state_est = self.layers_rec[-1](psi)
+            k = self.gate(layer(k))
+        state_est = self.layers_rec[-1](k)
 
 
         return phi, psi, state_est, q_est
