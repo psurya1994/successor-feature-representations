@@ -13,6 +13,7 @@ class Psi2QNet(nn.Module):
         super(Psi2QNet, self).__init__()
         self.w = Parameter(torch.Tensor(feature_dim))
         nn.init.constant_(self.w, 0) # CHECK for better initialization
+        self.to(Config.DEVICE)
     
     def forward(self, psi):
         return torch.matmul(psi, self.w)
@@ -25,6 +26,7 @@ class Psi2QNetFC(nn.Module):
         self.layers = nn.ModuleList(
             [layer_init_0(nn.Linear(dim_in, dim_out)) for dim_in, dim_out in zip(dims[:-1], dims[1:])])
         self.gate = gate
+        self.to(Config.DEVICE)
     
     def forward(self, psi):
         out = psi.view(psi.size(0), -1)
@@ -65,6 +67,7 @@ class SRNetCNN(nn.Module):
             self.psi2q = Psi2QNet(output_dim, body.feature_dim)
         if(config == 1):
             self.psi2q = Psi2QNetFC(output_dim, body.feature_dim)
+        self.to(Config.DEVICE)
 
     def forward(self, x):
         phi = self.body(tensor(x)) # shape: b x state_dim
@@ -120,6 +123,8 @@ class SRNetWithReconstruction(nn.Module):
         if(config == 1):
             self.psi2q = Psi2QNetFC(output_dim, body.feature_dim, hidden_units=hidden_units_psi2q)
 
+        self.to(Config.DEVICE)
+
     def forward(self, x):
 
         # Finding the latent layer
@@ -166,6 +171,10 @@ class SRNet(nn.Module):
             self.psi2q = Psi2QNet(output_dim, body.feature_dim)
         if(config == 1):
             self.psi2q = Psi2QNetFC(output_dim, body.feature_dim)
+
+        self.to(Config.DEVICE)
+
+
 
     def forward(self, x):
         phi = self.body(tensor(x)) # shape: b x state_dim
