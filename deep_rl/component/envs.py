@@ -37,6 +37,10 @@ def make_env(env_id, seed, rank, episode_life=True):
             env = dm_control2gym.make(domain_name=domain, task_name=task)
         else:
 
+            if("Dy-" in env_id):
+                from .fourrooms_dynamic import * # CHECK
+                env_id = env_id[3:]
+
             # Writing cases for FourRoomsMatrix
             if(env_id == "FourRoomsMatrix"):
                 env = FourRoomsMatrix()

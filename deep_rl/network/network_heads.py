@@ -40,7 +40,7 @@ class SRNetCNN(nn.Module):
     Added by Surya.
     SR fully connected body network.
     """
-    def __init__(self, output_dim, body, hidden_units=(100,), gate=F.relu, config=1):
+    def __init__(self, output_dim, body, hidden_units=(1000,), gate=F.relu, config=1):
         """
         config -> type of learning on top of state abstraction
             0 - typical SR with weights sharing
@@ -52,9 +52,9 @@ class SRNetCNN(nn.Module):
         self.width = int(np.sqrt(body.feature_dim))
 
         # CNN layers
-        self.conv1 = nn.Conv2d(1, 32, 3, 1)
-        self.conv2 = nn.Conv2d(32, 64, 3, 1)
-        self.fc_size = 64 * ((self.width - (3-1)*2) // 2) ** 2
+        self.conv1 = nn.Conv2d(1, 64, 3, 1)
+        self.conv2 = nn.Conv2d(64, 128, 3, 1)
+        self.fc_size = 128 * ((self.width - (3-1)*2) // 2) ** 2
 
         # FC layers
         dims = (self.fc_size,) + hidden_units + (body.feature_dim * output_dim,)
