@@ -13,7 +13,7 @@ from gym import spaces
 import gym
 import random
 
-class FourRooms(gym.Env):
+class DyFourRooms(gym.Env):
 
     def __init__(self, goal=2, p=0, config=1, layout='3rooms', dynamic_map=True):
         """
@@ -329,22 +329,22 @@ wwwwwwwwwwwww
         elif(self.config == 2):
             return self.render_state().flatten(), reward, done, {}
 
-class FourRoomsMatrix(FourRooms):
+class DyFourRoomsMatrix(DyFourRooms):
     def __init__(self, goal=2, p=0):
-        FourRooms.__init__(self, goal=goal, p=p, config=2)
+        DyFourRooms.__init__(self, goal=goal, p=p, config=2)
 
 
-class FourRoomsNoTerm(FourRooms):
+class DyFourRoomsNoTerm(DyFourRooms):
     """
     Environment with no terminal state but with a probability of dying.
 
     """
     def __init__(self, p=0, dying=0, config=1):
-        FourRooms.__init__(self, p=p, config=config)
+        DyFourRooms.__init__(self, p=p, config=config)
         self.dying = dying
 
     def render(self):
-        return FourRooms.render(self, show_goal=False)
+        return DyFourRooms.render(self, show_goal=False)
 
     def step(self, action):
         '''
@@ -381,6 +381,6 @@ class FourRoomsNoTerm(FourRooms):
             return self.render_state().flatten(), reward, done, {}
 
 
-class FourRoomsMatrixNoTerm(FourRoomsNoTerm):
+class DyFourRoomsMatrixNoTerm(DyFourRoomsNoTerm):
     def __init__(self, p=0, dying=0.01):
-        FourRoomsNoTerm.__init__(self, p=p, dying=dying, config=2)
+        DyFourRoomsNoTerm.__init__(self, p=p, dying=dying, config=2)

@@ -16,6 +16,7 @@ from baselines.common.atari_wrappers import FrameStack as FrameStack_
 from baselines.common.vec_env.subproc_vec_env import SubprocVecEnv, VecEnv
 
 from .fourrooms import * # CHECK
+from .fourrooms_dynamic import * 
 from .lineworld import LineWorld
 from .memory_lineworld import *
 
@@ -36,29 +37,51 @@ def make_env(env_id, seed, rank, episode_life=True):
             _, domain, task = env_id.split('-')
             env = dm_control2gym.make(domain_name=domain, task_name=task)
         else:
-
             if("Dy-" in env_id):
-                from .fourrooms_dynamic import * # CHECK
-                env_id = env_id[3:]
+                is_dyna = True
+                env_id_ = env_id[3:]
+            else:
+                is_dyna = False 
+                env_id_ = env_id
 
             # Writing cases for FourRoomsMatrix
-            if(env_id == "FourRoomsMatrix"):
-                env = FourRoomsMatrix()
-            elif("FourRoomsMatrix-Goal" in env_id):
+            if(env_id_ == "FourRoomsMatrix"):
+                if(is_dyna):
+                    env = DyFourRoomsMatrix()
+                else:
+                    env = FourRoomsMatrix()
+            elif("FourRoomsMatrix-Goal" in env_id_):
                 _, _, goal=env_id.split('-')
-                env = FourRoomsMatrix(goal=int(goal))
+                if(is_dyna):
+                    env = DyFourRoomsMatrix(goal=int(goal))
+                else:
+                    env = FourRoomsMatrix(goal=int(goal))
+                    
 
             # Writing cases for FourRooms
-            elif(env_id == "FourRooms"):
-                env = FourRooms()
-            elif("FourRooms-Goal" in env_id):
+            elif(env_id_ == "FourRooms"):
+                if(is_dyna):
+                    env = DyFourRooms()
+                else:
+                    env = FourRooms()
+            elif("FourRooms-Goal" in env_id_):
                 _, _, goal=env_id.split('-')
-                env = FourRooms(goal=int(goal))
+                if(is_dyna):
+                    env = DyFourRooms(goal=int(goal))
+                else:
+                    env = FourRooms(goal=int(goal))
 
-            elif(env_id == "FourRoomsNoTerm"):
-                env = FourRoomsNoTerm()
-            elif(env_id == "FourRoomsMatrixNoTerm"):
-                env = FourRoomsMatrixNoTerm()
+            # Writing cases for no terminal states
+            elif(env_id_ == "FourRoomsNoTerm"):
+                if(is_dyna):
+                    env = DyFourRoomsNoTerm()
+                else:
+                    env = FourRoomsNoTerm()
+            elif(env_id_ == "FourRoomsMatrixNoTerm"):
+                if(is_dyna):
+                    env = DyFourRoomsMatrixNoTerm()
+                else:
+                    env = FourRoomsMatrixNoTerm()
 
             # Writing cases for LineWorld
             elif(env_id == "LineWorld"):
