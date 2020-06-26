@@ -59,15 +59,7 @@ def dqn_feature(**kwargs):
         agent.switch_task()
     return agent
 
-agents = []
-goals = [21]
-for g in goals:
-    game = 'FourRoomsMatrix-Goal-'+str(g)
-    agents.append(dqn_feature(game=game))
-    # plt.figure(figsize=(18,6))
-    # plt.plot(np.array(agents[-1].returns)[:,0], np.array(agents[-1].returns)[:,1], '.-')
-    # plt.xlabel('timesteps'), plt.ylabel('returns')
-    # plt.title('DQN performance on ' + game), plt.show()
+
 
 def avdsr_feature(**kwargs):
     kwargs['tag'] = 'Training avDSR based on DQN agents'
@@ -110,11 +102,28 @@ def avdsr_feature(**kwargs):
         agent.step()
         agent.switch_task()
 
+
+# To train eps = 1 agent, uncomment below
+ind = '01'
+agents = []
+goals = [21]
+for g in goals:
+    game = 'FourRoomsMatrix-Goal-'+str(g)
+    agents.append(dqn_feature(game=game))
 avdsr = avdsr_feature(game='FourRoomsMatrixNoTerm', agents=agents, choice=0)
 
+# To train eps = 0.9 agent, uncomment below
+# ind = '02'
+# agents = []
+# goals = [21, 28, 84, 91]
+# for g in goals:
+#     game = 'FourRoomsMatrix-Goal-'+str(g)
+#     agents.append(dqn_feature(game=game))
+# avdsr = avdsr_feature(game='FourRoomsMatrixNoTerm', agents=agents, choice=0)
+
 # Saving the model
-torch.save(avdsr.network, 'storage/01-avdsr.weights')
+torch.save(avdsr.network, 'storage/'+ind+'-avdsr.weights')
 
 # Saving the loss function
-with open('storage/01-loss.p', 'wb') as f:
-    pickle.dump(rewards_dict, f, pickle.HIGHEST_PROTOCOL)
+with open('storage/'+ind+'-loss.p', 'wb') as f:
+    pickle.dump(avdsr.loss_vec, f, pickle.HIGHEST_PROTOCOL)
