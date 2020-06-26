@@ -171,9 +171,9 @@ r_c0ep9 = runNAgents(dsr_feature_init, runs=3, freeze=2, ref=avdsr,style1=0)
 r_c1ep9 = runNAgents(dsr_feature_init, runs=3, freeze=2, ref=avdsr,style1=1)
 
 
-rewards_dict = {'avDSR, 0.4eps, d0.05, 4DQNs: 169 learnable params (3e5 training)': r_c0ep9[1:],
-               'avDSR, 0.4eps, d0.05, 4DQNs: 2708 learnable params (3e5 training)': r_c1ep9[1:]                
+rewards_dict = {'avDSR, 0.8eps, d0.05, 4DQNs: 169 learnable params (3e5 training)': r_c0ep9[1:],
+               'avDSR, 0.8eps, d0.05, 4DQNs: 2708 learnable params (3e5 training)': r_c1ep9[1:]                
                }
 
-with open('storage/'+ind+'-rewards-0.4eps.p', 'wb') as f:
+with open('storage/'+ind+'-rewards-0.8eps.p', 'wb') as f:
     pickle.dump(rewards_dict, f, pickle.HIGHEST_PROTOCOL)
