@@ -150,9 +150,12 @@ wwwwwwwwwwwww
         self.np_random, seed = seeding.np_random(seed)
         return [seed]
 
-    def reset(self):
+    def reset(self, init=None):
         self.updates = 0
-        state = self.rng.choice(self.init_states)
+        if(init is None):
+            state = self.rng.choice(self.init_states)
+        else:
+            state = init
         # state = 0 # fix starting state
         self.current_cell = self.tocell[state]
         if(self.config == 0):
