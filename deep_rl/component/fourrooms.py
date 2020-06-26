@@ -249,8 +249,8 @@ class FourRoomsNoTerm(FourRooms):
     Environment with no terminal state but with a probability of dying.
 
     """
-    def __init__(self, p=0, dying=0, config=1):
-        FourRooms.__init__(self, p=p, config=config)
+    def __init__(self, p=0, dying=0, config=1, layout='4rooms'):
+        FourRooms.__init__(self, p=p, config=config, layout='4rooms')
         self.dying = dying
 
     def render(self):
