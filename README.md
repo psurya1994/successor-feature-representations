@@ -27,6 +27,8 @@ Running test3. Same as the relation between 02 and 03. Here between 04 and 05.
 08,09 for eps = 0.4, dying = 0.05 because the above tapers off too quick too! (09 eps has the wrong label in the saved file, be careful!)
 
 10,11 -- use 1 DQN (goal: 28). everything else same as above. eps = 0.8, because 0.4 seemed too less.
+
+12 -- saving avdsr weights at multipel checkpoints: record_iters = [0, 1e3, 1e4, 2e4, 5e4, 1e5, 2e5, 3e5]
 ```
 
 To do:
