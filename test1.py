@@ -111,4 +111,10 @@ def avdsr_feature(**kwargs):
         agent.switch_task()
 
 avdsr = avdsr_feature(game='FourRoomsMatrixNoTerm', agents=agents, choice=0)
-torch.save(avdsr.network, 'storage/01-avdsr.p')
+
+# Saving the model
+torch.save(avdsr.network, 'storage/01-avdsr.weights')
+
+# Saving the loss function
+with open('storage/01-loss.p', 'wb') as f:
+    pickle.dump(rewards_dict, f, pickle.HIGHEST_PROTOCOL)
