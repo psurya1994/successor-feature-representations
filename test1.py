@@ -1,3 +1,7 @@
+"""
+Code to learn avDSR agent
+"""
+
 # Setting up 
 from deep_rl import *
 import matplotlib.pyplot as plt
@@ -5,6 +9,8 @@ import torch
 from tqdm.notebook import trange, tqdm
 import random
 import numpy as np
+import pickle
+
 select_device(0)
 
 def dqn_feature(**kwargs):
@@ -62,3 +68,49 @@ for g in goals:
     plt.plot(np.array(agents[-1].returns)[:,0], np.array(agents[-1].returns)[:,1], '.-')
     plt.xlabel('timesteps'), plt.ylabel('returns')
     plt.title('DQN performance on ' + game), plt.show()
+
+def avdsr_feature(**kwargs):
+    kwargs['tag'] = 'Training avDSR based on DQN agents'
+    generate_tag(kwargs)
+    kwargs.setdefault('log_level', 0)
+    config = Config()
+    config.merge(kwargs)
+
+    config.task_fn = lambda: Task(config.game)
+    config.eval_env = config.task_fn()
+    config.c = 1
+
+    config.optimizer_fn = lambda params: torch.optim.RMSprop(params, 0.002)
+    config.network_fn = lambda: SRNet(config.action_dim, SRIdentityBody(config.state_dim), hidden_units=(), config=0) #CHECK
+    config.replay_fn = lambda: Replay(memory_size=int(4e5), batch_size=10)
+
+    config.random_action_prob = LinearSchedule(1, 1, 1e4) # CHECK
+    config.discount = 0.99
+    config.target_network_update_freq = 200
+    config.exploration_steps = 0
+    # config.double_q = True
+    config.double_q = False
+    config.sgd_update_frequency = 4
+    config.gradient_clip = 5
+    config.max_steps = 3e5
+    config.async_actor = False
+    
+    agent = avDSRAgent(config, config.agents, style='DQN')
+    #run_steps function below
+    config = agent.config
+    agent_name = agent.__class__.__name__
+    t0 = time.time()
+    while True:
+        if config.log_interval and not agent.total_steps % config.log_interval:
+            agent.logger.info('steps %d, %.2f steps/s' % (agent.total_steps, config.log_interval / (time.time() - t0)))
+            t0 = time.time()
+        if config.max_steps and agent.total_steps >= config.max_steps:
+            return agent
+            break
+        agent.step()
+        agent.switch_task()
+
+avdsr = avdsr_feature(game='FourRoomsMatrixNoTerm', agents=agents, choice=0)
+
+with open('storage/01-avdsr.p', 'wb') as f:
+    pickle.dump(avdsr, f, pickle.HIGHEST_PROTOCOL)
