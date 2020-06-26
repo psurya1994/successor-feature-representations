@@ -37,7 +37,7 @@ def dqn_feature(**kwargs):
     config.sgd_update_frequency = 4
     config.gradient_clip = 5
     config.eval_interval = int(5e3)
-    config.max_steps = 5e4
+    config.max_steps = 1e1
     config.async_actor = False
     agent = DQNAgent(config)
     #run_steps function below
@@ -60,7 +60,7 @@ def dqn_feature(**kwargs):
     return agent
 
 agents = []
-goals = [21, 28, 84, 91]
+goals = [21]
 for g in goals:
     game = 'FourRoomsMatrix-Goal-'+str(g)
     agents.append(dqn_feature(game=game))
@@ -111,6 +111,4 @@ def avdsr_feature(**kwargs):
         agent.switch_task()
 
 avdsr = avdsr_feature(game='FourRoomsMatrixNoTerm', agents=agents, choice=0)
-
-with open('storage/01-avdsr.p', 'wb') as f:
-    pickle.dump(avdsr, f, pickle.HIGHEST_PROTOCOL)
+torch.save(avdsr.network, 'storage/01-avdsr.p')
