@@ -37,7 +37,7 @@ def dqn_feature(**kwargs):
     config.sgd_update_frequency = 4
     config.gradient_clip = 5
     config.eval_interval = int(5e3)
-    config.max_steps = 1e1
+    config.max_steps = 5e4
     config.async_actor = False
     agent = DQNAgent(config)
     #run_steps function below
@@ -76,7 +76,7 @@ def avdsr_feature(**kwargs):
     config.network_fn = lambda: SRNet(config.action_dim, SRIdentityBody(config.state_dim), hidden_units=(), config=0) #CHECK
     config.replay_fn = lambda: Replay(memory_size=int(4e5), batch_size=10)
 
-    config.random_action_prob = LinearSchedule(1, 1, 1e4) # CHECK
+    config.random_action_prob = LinearSchedule(0.9, 0.9, 1e4) # CHECK
     config.discount = 0.99
     config.target_network_update_freq = 200
     config.exploration_steps = 0
