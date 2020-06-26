@@ -64,10 +64,10 @@ goals = [21]
 for g in goals:
     game = 'FourRoomsMatrix-Goal-'+str(g)
     agents.append(dqn_feature(game=game))
-    plt.figure(figsize=(18,6))
-    plt.plot(np.array(agents[-1].returns)[:,0], np.array(agents[-1].returns)[:,1], '.-')
-    plt.xlabel('timesteps'), plt.ylabel('returns')
-    plt.title('DQN performance on ' + game), plt.show()
+    # plt.figure(figsize=(18,6))
+    # plt.plot(np.array(agents[-1].returns)[:,0], np.array(agents[-1].returns)[:,1], '.-')
+    # plt.xlabel('timesteps'), plt.ylabel('returns')
+    # plt.title('DQN performance on ' + game), plt.show()
 
 def avdsr_feature(**kwargs):
     kwargs['tag'] = 'Training avDSR based on DQN agents'
