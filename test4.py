@@ -95,7 +95,7 @@ def avdsr_feature(**kwargs):
     while True:
         if(agent.total_steps in record_iters):
             # Saving the model
-            torch.save(avdsr.network, 'storage/'+ind+'-'+str(agent.total_steps)+'-avdsr.weights')
+            torch.save(agent.network, 'storage/'+ind+'-'+str(agent.total_steps)+'-avdsr.weights')
         if config.log_interval and not agent.total_steps % config.log_interval:
             agent.logger.info('steps %d, %.2f steps/s' % (agent.total_steps, config.log_interval / (time.time() - t0)))
             t0 = time.time()
