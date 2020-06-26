@@ -18,6 +18,9 @@ Learning curves for test2.py, test3.py has been used to generate this.
 04
 Same as 02, but with dying=0.1 instead of dying = 0.01 in four rooms. That might help us get better steady state sample distribution.
 
+05
+Running test3. Same as the relation between 02 and 03. Here between 04 and 05.
+
 ```
 
 To do:

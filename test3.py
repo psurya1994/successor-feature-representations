@@ -162,17 +162,17 @@ def runNAgents(function, runs, style1, store=True, freeze=0, ref=None):
     
     return t_dqn, r_dqn
 
-ind = '03'
+ind = '05'
 avdsr = avdsr_feature(game='FourRoomsMatrixNoTerm', agents=[], choice=0)
-weights = torch.load('storage/02-avdsr.weights', map_location='cpu').state_dict()
+weights = torch.load('storage/04-avdsr.weights', map_location='cpu').state_dict()
 avdsr.network.load_state_dict(weights,strict=True)
 
 r_c0ep9 = runNAgents(dsr_feature_init, runs=3, freeze=2, ref=avdsr,style1=0)
 r_c1ep9 = runNAgents(dsr_feature_init, runs=3, freeze=2, ref=avdsr,style1=1)
 
 
-rewards_dict = {'avDSR, 0.9eps, 4DQNs: 169 learnable params (3e5 training)': r_c0ep9[1:],
-               'avDSR, 0.9eps, 4DQNs: 2708 learnable params (3e5 training)': r_c1ep9[1:]                
+rewards_dict = {'avDSR, 0.9eps, d0.1, 4DQNs: 169 learnable params (3e5 training)': r_c0ep9[1:],
+               'avDSR, 0.9eps, d0.1, 4DQNs: 2708 learnable params (3e5 training)': r_c1ep9[1:]                
                }
 
 with open('storage/'+ind+'-rewards-0.9eps.p', 'wb') as f:
