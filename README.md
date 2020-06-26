@@ -14,6 +14,10 @@ Using tmp.py to generate the visualization for these nets.
 
 storage/03-rewards-0.9eps.p
 Learning curves for test2.py, test3.py has been used to generate this.
+
+04
+Same as 02, but with dying=0.1 instead of dying = 0.01 in four rooms. That might help us get better steady state sample distribution.
+
 ```
 
 To do:
