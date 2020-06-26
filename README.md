@@ -30,10 +30,13 @@ Running test3. Same as the relation between 02 and 03. Here between 04 and 05.
 ```
 
 To do:
-- Keep goals in the same room, might give better performance for APSF
 - Regenerate plots for option 1 and option 2 (least priority)
 - P OOD, R chaning
 	- Save network weights for avdsr option 1, init with option 2.
 	- Save network weights for avdsr option 1. 
 	- Use these to train various networks and plot the performance
 
+Done:
+
+- Keep goals in the same room, might give better performance for APSF
+	- Nope! This won't work as long as we're doing unsupervised exploration. Need an alternative strategy. This also pinpoints to one of the problems with this approach. Learning the SR is hard because of poor steady state distribution (I think the same problem leads to catasforgettingin DQN, does PER fix catastrophic forgetting? need to check)

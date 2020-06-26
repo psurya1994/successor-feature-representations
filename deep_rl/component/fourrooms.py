@@ -51,6 +51,22 @@ w   w   w   w
 w   w   w   w
 wwwwwwwwwwwww
 """
+        elif(layout == '3roomsh'):
+            layout = """\
+wwwwwwwwwwwww
+w           w
+w           w
+wwwwwwwww www
+w           w
+w           w
+w           w
+w           w
+ww wwwwwwwwww
+w           w
+w           w
+w           w
+wwwwwwwwwwwww
+"""
         elif(layout == 'maze'):
             layout = """\
 wwwwwwwwwwwww
@@ -224,8 +240,8 @@ wwwwwwwwwwwww
             return self.render_state().flatten(), reward, done, {}
 
 class FourRoomsMatrix(FourRooms):
-    def __init__(self, goal=62, p=0):
-        FourRooms.__init__(self, goal=goal, p=p, config=2)
+    def __init__(self, goal=62, p=0, layout='4rooms'):
+        FourRooms.__init__(self, goal=goal, p=p, config=2, layout=layout)
 
 
 class FourRoomsNoTerm(FourRooms):
@@ -283,5 +299,5 @@ class FourRoomsNoTerm(FourRooms):
 
 
 class FourRoomsMatrixNoTerm(FourRoomsNoTerm):
-    def __init__(self, p=0, dying=0.05):
-        FourRoomsNoTerm.__init__(self, p=p, dying=dying, config=2)
+    def __init__(self, p=0, dying=0.05, layout='4rooms'):
+        FourRoomsNoTerm.__init__(self, p=p, dying=dying, config=2, layout='4rooms')
