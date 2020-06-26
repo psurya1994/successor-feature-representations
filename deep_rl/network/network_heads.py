@@ -24,7 +24,7 @@ class Psi2QNetFC(nn.Module):
 
         dims = (feature_dim*output_dim,) + hidden_units + (output_dim,)
         self.layers = nn.ModuleList(
-            [layer_init_0(nn.Linear(dim_in, dim_out)) for dim_in, dim_out in zip(dims[:-1], dims[1:])])
+            [layer_init(nn.Linear(dim_in, dim_out)) for dim_in, dim_out in zip(dims[:-1], dims[1:])])
         self.gate = gate
         self.to(Config.DEVICE)
     
@@ -111,11 +111,11 @@ class SRNetWithReconstruction(nn.Module):
 
         # layers for SR
         self.layers_sr = nn.ModuleList(
-            [layer_init_0(nn.Linear(dim_in, dim_out)) for dim_in, dim_out in zip(dims_sr[:-1], dims_sr[1:])])
+            [layer_init(nn.Linear(dim_in, dim_out)) for dim_in, dim_out in zip(dims_sr[:-1], dims_sr[1:])])
         
         # layers for reconstruction
         self.layers_rec = nn.ModuleList(
-            [layer_init_0(nn.Linear(dim_in, dim_out)) for dim_in, dim_out in zip(dims_rec[:-1], dims_rec[1:])])
+            [layer_init(nn.Linear(dim_in, dim_out)) for dim_in, dim_out in zip(dims_rec[:-1], dims_rec[1:])])
 
         # SR final head layer
         if(config == 0):
@@ -163,7 +163,7 @@ class SRNet(nn.Module):
         self.output_dim = output_dim# TODO: check if this is the right way to do it
         dims = (body.feature_dim,) + hidden_units + (body.feature_dim * output_dim,)
         self.layers = nn.ModuleList(
-            [layer_init_0(nn.Linear(dim_in, dim_out)) for dim_in, dim_out in zip(dims[:-1], dims[1:])])
+            [layer_init(nn.Linear(dim_in, dim_out)) for dim_in, dim_out in zip(dims[:-1], dims[1:])])
         
         self.gate = gate
         self.feature_dim = body.feature_dim * output_dim
