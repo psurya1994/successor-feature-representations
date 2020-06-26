@@ -53,12 +53,14 @@ def dqn_feature(**kwargs):
         agent.switch_task()
     return agent
 
-agents = []
-goals = [21, 28, 84, 91]
-for g in goals:
-    game = 'FourRoomsMatrix-Goal-'+str(g)
-    agents.append(dqn_feature(game=game))
-    plt.figure(figsize=(18,6))
-    plt.plot(np.array(agents[-1].returns)[:,0], np.array(agents[-1].returns)[:,1], '.-')
-    plt.xlabel('timesteps'), plt.ylabel('returns')
-    plt.title('DQN performance on ' + game), plt.show()
+dqn_feature(game='FourRoomsMatrix')
+
+# agents = []
+# goals = [21, 28, 84, 91]
+# for g in goals:
+#     game = 'FourRoomsMatrix-Goal-'+str(g)
+#     agents.append(dqn_feature(game=game))
+#     plt.figure(figsize=(18,6))
+#     plt.plot(np.array(agents[-1].returns)[:,0], np.array(agents[-1].returns)[:,1], '.-')
+#     plt.xlabel('timesteps'), plt.ylabel('returns')
+#     plt.title('DQN performance on ' + game), plt.show()
