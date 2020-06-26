@@ -76,7 +76,7 @@ def avdsr_feature(**kwargs):
     config.network_fn = lambda: SRNet(config.action_dim, SRIdentityBody(config.state_dim), hidden_units=(), config=0) #CHECK
     config.replay_fn = lambda: Replay(memory_size=int(4e5), batch_size=10)
 
-    config.random_action_prob = LinearSchedule(0.9, 0.9, 1e4) # CHECK
+    config.random_action_prob = LinearSchedule(0.8, 0.8, 1e4) # CHECK
     config.discount = 0.99
     config.target_network_update_freq = 200
     config.exploration_steps = 0
@@ -113,7 +113,7 @@ def avdsr_feature(**kwargs):
 # avdsr = avdsr_feature(game='FourRoomsMatrixNoTerm', agents=agents, choice=0)
 
 # To train eps = 0.9 agent, uncomment below
-ind = '04'
+ind = '06'
 agents = []
 goals = [21, 28, 84, 91]
 for g in goals:

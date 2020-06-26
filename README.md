@@ -21,6 +21,8 @@ Same as 02, but with dying=0.1 instead of dying = 0.01 in four rooms. That might
 05
 Running test3. Same as the relation between 02 and 03. Here between 04 and 05.
 
+
+06, 07 same as above but with eps=0.8. Because eps=0.9 SR visualization isn't good. SR tapers off too quick.
 ```
 
 To do:
