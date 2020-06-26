@@ -126,9 +126,10 @@ wwwwwwwwwwwww
         self.horizon = 200
 
 
-    def render(self, show_goal=True):
+    def render(self, show_goal=True, show_agent=True):
         current_grid = np.array(self.occupancy)
-        current_grid[self.current_cell[0], self.current_cell[1]] = -1
+        if(show_agent):
+            current_grid[self.current_cell[0], self.current_cell[1]] = -1
         if show_goal:
             goal_cell = self.tocell[self.goal]
             current_grid[goal_cell[0], goal_cell[1]] = -2
@@ -235,6 +236,13 @@ class FourRoomsNoTerm(FourRooms):
 
     def render(self):
         return FourRooms.render(self, show_goal=False)
+
+    def render_state(self):
+        occupancy = self.occupancy * 0.01
+        current_grid = np.array(occupancy)
+        current_grid[self.current_cell[0], self.current_cell[1]] = 1
+        goal_cell = self.tocell[self.goal]
+        return current_grid
 
     def step(self, action):
         '''

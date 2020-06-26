@@ -346,6 +346,13 @@ class DyFourRoomsNoTerm(DyFourRooms):
     def render(self):
         return DyFourRooms.render(self, show_goal=False)
 
+    def render_state(self):
+        occupancy = self.occupancy * 0.01
+        current_grid = np.array(occupancy)
+        current_grid[self.current_cell[0], self.current_cell[1]] = 1
+        goal_cell = self.tocell[self.goal]
+        return current_grid
+
     def step(self, action):
         '''
         Takes a step in the environment with 1-self.p probability. And takes a step in the
