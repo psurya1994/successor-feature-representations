@@ -120,7 +120,7 @@ ind = '15'
 agents = []
 goals = [21]
 for g in goals:
-    game = 'Dy-FourRoomsMatrix-Goal-'+str(g)
+    game = 'Dy-FourRoomsMatrixNoTerm'+str(g)
     agents.append(dqn_feature(game=game))
 record_iters = [0, 1e2, 1e3, 3e3, 1e4, 2e4, 5e4, 1e5, 2e5, 3e5]
 avdsr = avdsr_feature(game='FourRoomsMatrixNoTerm', agents=agents, choice=0)
