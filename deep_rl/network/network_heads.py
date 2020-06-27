@@ -52,7 +52,7 @@ class SRNetCNN(nn.Module):
         self.width = int(np.sqrt(body.feature_dim))
 
         # CNN layers
-        self.conv1 = nn.Conv2d(32, 64, 3, 1)
+        self.conv1 = nn.Conv2d(1, 64, 3, 1)
         self.conv2 = nn.Conv2d(64, 128, 3, 1)
         self.fc_size = 128 * ((self.width - (3-1)*2) // 2) ** 2
 
