@@ -72,11 +72,12 @@ def avdsr_feature(**kwargs):
     config.eval_env = config.task_fn()
     config.c = 1
 
-    config.optimizer_fn = lambda params: torch.optim.RMSprop(params, 0.002)
-    config.network_fn = lambda: SRNet(config.action_dim, SRIdentityBody(config.state_dim), hidden_units=(), config=0) #CHECK
+    config.optimizer_fn = lambda params: torch.optim.RMSprop(params, 0.001)
+    config.network_fn = lambda: SRNetCNN(config.action_dim, SRIdentityBody(config.state_dim), 
+                                         hidden_units=(2000,), config=0) #CHECK
     config.replay_fn = lambda: Replay(memory_size=int(4e5), batch_size=10)
 
-    config.random_action_prob = LinearSchedule(0.8, 0.8, 1e4) # CHECK
+    config.random_action_prob = LinearSchedule(1, 1, 1e4) # CHECK
     config.discount = 0.99
     config.target_network_update_freq = 200
     config.exploration_steps = 0
