@@ -163,23 +163,24 @@ def runNAgents(function, runs, style1, store=True, freeze=0, ref=None):
     
     return t_dqn, r_dqn
 
-ind = '13'
-read_ind='12'
+ind = '14'
+read_ind='13'
 arg1 = sys.argv[1]
+readfile = 'storage/'+read_ind+'-'+arg1+'-avdsr.weights'
 
-readfile = 'storage/'+read_ind+'-'+arg1+'avdsr.weights'
+select_device(0)
 
 avdsr = avdsr_feature(game='FourRoomsMatrixNoTerm', agents=[], choice=0)
-weights = torch.load('storage/10-avdsr.weights', map_location='cpu').state_dict()
+weights = torch.load(readfile).state_dict()
 avdsr.network.load_state_dict(weights,strict=True)
 
-r_c0ep9 = runNAgents(dsr_feature_init, runs=3, freeze=2, ref=avdsr,style1=0)
-r_c1ep9 = runNAgents(dsr_feature_init, runs=3, freeze=2, ref=avdsr,style1=1)
+r_c0 = runNAgents(dsr_feature_init, runs=3, freeze=2, ref=avdsr,style1=0)
+r_c1 = runNAgents(dsr_feature_init, runs=3, freeze=2, ref=avdsr,style1=1)
 
 
-rewards_dict = {'avDSR, 0.8eps, d0.05: 169 learnable params (3e5 training)': r_c0ep9[1:],
-               'avDSR, 0.8eps, d0.05, 4DQNs: 2708 learnable params (3e5 training)': r_c1ep9[1:]                
+rewards_dict = {'avDSR, 1eps, d0.01: 169 learnable params ('+arg1+' training)': r_c0,
+               'avDSR, 1eps, d0.01: 2708 learnable params ('+arg1+' training)': r_c1               
                }
 
-with open('storage/'+ind+'-rewards-0.8eps.p', 'wb') as f:
+with open('storage/'+ind+'-'+arg1+'-rewards-1eps.p', 'wb') as f:
     pickle.dump(rewards_dict, f, pickle.HIGHEST_PROTOCOL)
