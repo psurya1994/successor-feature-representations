@@ -166,6 +166,7 @@ def runNAgents(function, runs, style1, store=True, freeze=0, ref=None):
 ind = '14'
 read_ind='13'
 arg1 = sys.argv[1]
+print(arg1, type(arg1))
 readfile = 'storage/'+read_ind+'-'+arg1+'-avdsr.weights'
 
 select_device(0)
