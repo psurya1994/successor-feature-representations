@@ -146,7 +146,7 @@ def dsr_feature_init(ref,style1,**kwargs):
         
     return agent
 
-def runNAgents(function, runs, style1, store=True, freeze=0, ref=None):
+def runNAgents(function, runs, style1, store=False, freeze=0, ref=None):
     r_dqn = []; t_dqn = []
     if(store):
         agents = []
