@@ -24,7 +24,7 @@ class DyFourRooms(gym.Env):
         """
         self.dynamic_map = dynamic_map
         if(dynamic_map):
-            layout = random.choice(['3rooms','4rooms'])
+            layout = random.choice(['3rooms','4rooms', 'open'])
         if(layout == '4rooms'):
             layout = """\
 wwwwwwwwwwwww
@@ -159,7 +159,7 @@ wwwwwwwwwwwww
     def reset(self):
         # Choose new layout
         if(self.dynamic_map):
-            layout = random.choice(['3rooms','4rooms'])
+            layout = random.choice(['3rooms','4rooms', 'open'])
         if(layout == '4rooms'):
             layout = """\
 wwwwwwwwwwwww
