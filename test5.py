@@ -175,8 +175,8 @@ avdsr = avdsr_feature(game='FourRoomsMatrixNoTerm', agents=[], choice=0)
 weights = torch.load(readfile).state_dict()
 avdsr.network.load_state_dict(weights,strict=True)
 
-r_c0 = runNAgents(dsr_feature_init, runs=1, freeze=2, ref=avdsr,style1=0)
-r_c1 = runNAgents(dsr_feature_init, runs=1, freeze=2, ref=avdsr,style1=1)
+r_c0 = runNAgents(dsr_feature_init, runs=3, freeze=2, ref=avdsr,style1=0)
+r_c1 = runNAgents(dsr_feature_init, runs=3, freeze=2, ref=avdsr,style1=1)
 
 
 rewards_dict = {'avDSR, 1eps, d0.01: 169 learnable params ('+arg1+' training)': r_c0,

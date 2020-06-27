@@ -1,5 +1,7 @@
 sbatch job.sh 0
+sbatch job.sh 100
 sbatch job.sh 1000
+sbatch job.sh 3000
 sbatch job.sh 10000
 sbatch job.sh 20000
 sbatch job.sh 50000
