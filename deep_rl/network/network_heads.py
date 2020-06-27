@@ -52,10 +52,9 @@ class SRNetCNN(nn.Module):
         self.width = int(np.sqrt(body.feature_dim))
 
         # CNN layers
-        self.conv0 = nn.Conv2d(1, 32, 3, 1)
         self.conv1 = nn.Conv2d(32, 64, 3, 1)
         self.conv2 = nn.Conv2d(64, 128, 3, 1)
-        self.fc_size = 128 * ((self.width - (3-1)*3) // 2) ** 2
+        self.fc_size = 128 * ((self.width - (3-1)*2) // 2) ** 2
 
         # FC layers
         dims = (self.fc_size,) + hidden_units + (body.feature_dim * output_dim,)
@@ -78,8 +77,6 @@ class SRNetCNN(nn.Module):
         psi = psi.view(phi.size(0), 1, self.width, self.width)
 
         # Conv layers
-        psi = self.conv0(psi)
-        psi = F.relu(psi)
         psi = self.conv1(psi)
         psi = F.relu(psi)
         psi = self.conv2(psi)
