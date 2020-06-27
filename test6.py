@@ -116,14 +116,14 @@ def avdsr_feature(**kwargs):
 # avdsr = avdsr_feature(game='FourRoomsMatrixNoTerm', agents=agents, choice=0)
 
 # To train eps = 0.9 agent, uncomment below
-ind = '15'
+ind = '13'
 agents = []
 goals = [21]
 for g in goals:
-    game = 'Dy-FourRoomsMatrixNoTerm'+str(g)
+    game = 'FourRoomsMatrix-Goal-'+str(g)
     agents.append(dqn_feature(game=game))
 record_iters = [0, 1e2, 1e3, 3e3, 1e4, 2e4, 5e4, 1e5, 2e5, 3e5]
-avdsr = avdsr_feature(game='FourRoomsMatrixNoTerm', agents=agents, choice=0)
+avdsr = avdsr_feature(game='DyFourRoomsMatrixNoTerm', agents=agents, choice=0)
 
 # Saving the loss function
 with open('storage/'+ind+'-loss.p', 'wb') as f:
