@@ -32,6 +32,15 @@ Running test3. Same as the relation between 02 and 03. Here between 04 and 05.
 
 14 -- run bash exmpts.sh to see learning curves for all configs in 13
 
+15 -- option 2 learning from scratch. (saving weights at all intervals)
+
+16 -- option 1 learning from scratch. (saving weights at all intervals)
+
+17 -- option 1, trained with option 2 init (3e5). (saving weights at all intervals)
+
+18 -- testing performance of each of the options (15, 16, 17) for varying training iterations. 
+
+
 To do:
 - Regenerate plots for option 1 and option 2 (least priority)
 - P OOD, R chaning
