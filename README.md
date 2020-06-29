@@ -29,8 +29,8 @@ I haven't trained any of these configs until now.
 	- Training RPSF on ['3rooms','3roomsh','4rooms']
 - storage/25*
 	- Training RPSF on ['3roomsh'] with ['3rooms','4rooms'] init
-- storage/26-, 27- 28-
-	- 
+- storage/26-, 27-, 28-
+	- testing on ['3roomsh'] for above configs
 
 
 ---
