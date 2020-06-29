@@ -1,3 +1,5 @@
+- storage/14*
+	- part 1 of results. eps=1, training speed.
 - storage/15*
 	- Results of agent 2 trained with option 2 on ['3rooms', '4rooms']
 - storage/18*
