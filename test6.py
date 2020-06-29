@@ -120,8 +120,8 @@ def avdsr_feature(ref, **kwargs):
 # avdsr = avdsr_feature(game='FourRoomsMatrixNoTerm', agents=agents, choice=0)
 
 # To train eps = 0.9 agent, uncomment below
-ind = '23' # 17
-style2 = 0 # 2
+ind = '24' # 17
+style2 = 1 # 2
 agents = []
 goals = [21]
 for g in goals:
