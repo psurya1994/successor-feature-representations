@@ -5,6 +5,7 @@
 #SBATCH --mem=10G                             # Ask for 10 GB of RAM
 #SBATCH --time=3:00:00                        # The job will run for 3 hours
 #SBATCH -o storage/slurm-%j.out  # Write the log on tmp1
+#SBATCH --exclude=eos[20-21],rtx[1-9],apollov[01-05],apollor[06-16]
 
 # 1. Load your environment
 module load anaconda
