@@ -61,7 +61,7 @@ def dqn_feature(**kwargs):
 
 
 
-def avdsr_feature(**kwargs):
+def avdsr_feature(ref, **kwargs):
     kwargs['tag'] = 'Training avDSR based on DQN agents'
     generate_tag(kwargs)
     kwargs.setdefault('log_level', 0)
@@ -135,7 +135,6 @@ if(style2 == 1): # option 1
     avdsr = avdsr_feature(game='FourRoomsMatrixNoTerm', agents=agents, choice=0, ref=None)
 if(style2 == 2): # option 2 init for option 1
     weights = torch.load('storage/15-300000-avdsr.weights').state_dict()
-    print(weights)
     avdsr = avdsr_feature(game='FourRoomsMatrixNoTerm', agents=agents, choice=0, ref=weights)
     
 

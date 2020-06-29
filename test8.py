@@ -175,7 +175,6 @@ select_device(0)
 
 avdsr = avdsr_feature(game='FourRoomsMatrixNoTerm', agents=[], choice=0)
 weights = torch.load(readfile).state_dict()
-print(weights)
 avdsr.network.load_state_dict(weights,strict=True)
 
 r_c0 = runNAgents(dsr_feature_init, runs=3, freeze=2, ref=avdsr,style1=0)
