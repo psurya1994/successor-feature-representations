@@ -20,13 +20,15 @@
 I've been shooting in the dark here, I need to do this in a more organized way. Here's what I need to do for part 3 of the results in my paper.
 - train option 1 on ['3roomsh'], test option 1 on ['3roomsh']
 - train option 2 on ['3rooms','3roomsh','4rooms'], test these networks on ['3roomsh']
-- train agent with option 2 init (['3rooms','3roomsh','4rooms']) on ['3roomsh'], test the network on ['3roomsh']
+- train agent with option 2 init (['3rooms','4rooms']) on ['3roomsh'], test the network on ['3roomsh']
 
 I haven't trained any of these configs until now. 
 - storage/23*
 	- Training RPSF on ['3roomsh']
 - storage/24*
-	- 
+	- Training RPSF on ['3rooms','3roomsh','4rooms']
+- storage/25*
+	- Training RPSF on ['3roomsh'] with ['3rooms','4rooms'] init
 
 
 ---

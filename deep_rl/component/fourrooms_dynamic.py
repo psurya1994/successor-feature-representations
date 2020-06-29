@@ -57,6 +57,22 @@ w   w   w   w
 w   w   w   w
 wwwwwwwwwwwww
 """
+        elif(layout == '3roomsh'):
+            layout = """\
+wwwwwwwwwwwww
+w           w
+w           w
+wwwwwwwww www
+w           w
+w           w
+w           w
+w           w
+ww wwwwwwwwww
+w           w
+w           w
+w           w
+wwwwwwwwwwwww
+"""
         elif(layout == 'maze'):
             layout = """\
 wwwwwwwwwwwww
