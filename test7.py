@@ -203,5 +203,5 @@ rewards_dict = {'avDSR, 1eps, d0.01: 169 learnable params ('+arg1+' training)': 
                'avDSR, 1eps, d0.01: 2708 learnable params ('+arg1+' training)': r_c1               
                }
 
-with open('storage/'+ind+'-'+arg1+'-rewards-1eps.p', 'wb') as f:
+with open('storage/'+ind+'-rewards-1eps.p', 'wb') as f:
     pickle.dump(rewards_dict, f, pickle.HIGHEST_PROTOCOL)
