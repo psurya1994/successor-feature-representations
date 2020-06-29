@@ -165,8 +165,8 @@ def runNAgents(function, runs, style1, store=False, freeze=0, ref=None):
     
     return t_dqn, r_dqn
 
-ind = '21'
-read_ind='20'
+ind = '22'
+read_ind='17'
 arg1 = sys.argv[1]
 print(arg1, type(arg1))
 readfile = 'storage/'+read_ind+'-'+arg1+'-avdsr.weights'

@@ -240,7 +240,7 @@ wwwwwwwwwwwww
             return self.render_state().flatten(), reward, done, {}
 
 class FourRoomsMatrix(FourRooms):
-    def __init__(self, goal=62, p=0, layout='4rooms'):
+    def __init__(self, goal=62, p=0, layout='3roomsh'):
         FourRooms.__init__(self, goal=goal, p=p, config=2, layout=layout)
 
 
