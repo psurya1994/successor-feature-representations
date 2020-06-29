@@ -1,10 +1,10 @@
 - storage/15*
-	- Results of agent 2 trained with option 2 on ['3rooms', '4rooms'] and tested on ['4rooms']
+	- Results of agent 2 trained with option 2 on ['3rooms', '4rooms']
 - storage/18*
 	- Corresponding results for different iterations of training is in 18 (15 -> 18)
 	- tested on ['4rooms']
 - storage/17*
-	- Results of agent trained with option 2 init on ['3rooms', '4rooms']
+	- Results of agent trained with option 2 init ['3rooms', '4rooms'] on ['4rooms']
 - storage/19*
 	- Corresponding results for different iterations of training is in 19 (17 -> 19)
 	- tested on ['4rooms']
@@ -29,6 +29,8 @@ I haven't trained any of these configs until now.
 	- Training RPSF on ['3rooms','3roomsh','4rooms']
 - storage/25*
 	- Training RPSF on ['3roomsh'] with ['3rooms','4rooms'] init
+- storage/26-, 27- 28-
+	- 
 
 
 ---

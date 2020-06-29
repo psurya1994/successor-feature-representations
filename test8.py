@@ -165,11 +165,15 @@ def runNAgents(function, runs, style1, store=False, freeze=0, ref=None):
     
     return t_dqn, r_dqn
 
-ind = '22'
-read_ind='17'
-arg1 = sys.argv[1]
-print(arg1, type(arg1))
-readfile = 'storage/'+read_ind+'-'+arg1+'-avdsr.weights'
+
+# read_ind
+read_ind = sys.argv[1]
+# write_iter
+ind = sys.argv[2]
+# read_iter
+n_iter = sys.argv[3]
+
+readfile = 'storage/'+read_ind+'-'+n_iter+'-avdsr.weights'
 
 select_device(0)
 
@@ -181,9 +185,9 @@ r_c0 = runNAgents(dsr_feature_init, runs=3, freeze=2, ref=avdsr,style1=0)
 r_c1 = runNAgents(dsr_feature_init, runs=3, freeze=2, ref=avdsr,style1=1)
 
 
-rewards_dict = {'avDSR, 1eps, d0.01: 169 learnable params ('+arg1+' training)': r_c0,
-               'avDSR, 1eps, d0.01: 2708 learnable params ('+arg1+' training)': r_c1               
+rewards_dict = {'avDSR, 1eps, d0.01: 169 learnable params ('+n_iter+' training)': r_c0,
+               'avDSR, 1eps, d0.01: 2708 learnable params ('+n_iter+' training)': r_c1               
                }
 
-with open('storage/'+ind+'-'+arg1+'-rewards-1eps.p', 'wb') as f:
+with open('storage/'+ind+'-'+n_iter+'-rewards-1eps.p', 'wb') as f:
     pickle.dump(rewards_dict, f, pickle.HIGHEST_PROTOCOL)

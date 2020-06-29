@@ -120,8 +120,8 @@ def avdsr_feature(ref, **kwargs):
 # avdsr = avdsr_feature(game='FourRoomsMatrixNoTerm', agents=agents, choice=0)
 
 # To train eps = 0.9 agent, uncomment below
-ind = '24' # 17
-style2 = 1 # 2
+ind = '25' # 17
+style2 = 2 # 2
 agents = []
 goals = [21]
 for g in goals:
@@ -135,7 +135,7 @@ if(style2 == 0): # option 1
 if(style2 == 1): # option 2
     avdsr = avdsr_feature(game='Dy-FourRoomsMatrixNoTerm', agents=agents, choice=0, ref=None)
 if(style2 == 2): # option 2 init for option 1
-    weights = torch.load('storage/24-300000-avdsr.weights').state_dict()
+    weights = torch.load('storage/15-300000-avdsr.weights').state_dict()
     avdsr = avdsr_feature(game='FourRoomsMatrixNoTerm', agents=agents, choice=0, ref=weights)
     
 
