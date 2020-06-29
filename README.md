@@ -1,3 +1,35 @@
+- storage/15*
+	- Results of agent 2 trained with option 2 on ['3rooms', '4rooms'] and tested on ['4rooms']
+- storage/18*
+	- Corresponding results for different iterations of training is in 18 (15 -> 18)
+	- tested on ['4rooms']
+- storage/17*
+	- Results of agent trained with option 2 init on ['3rooms', '4rooms']
+- storage/19*
+	- Corresponding results for different iterations of training is in 19 (17 -> 19)
+	- tested on ['4rooms']
+- storage/20*
+	- Results of agent trained with option 1 init on ['4rooms']
+- storage/21*
+	- Corresponding results for different iterations of training is in 21 (20 -> 21)
+	- tested on ['4rooms']
+- storage/22*
+	- Correspondning results for different iterations of training is in 17 (17->22)
+	- tested on ['3roomsh']
+
+I've been shooting in the dark here, I need to do this in a more organized way. Here's what I need to do for part 3 of the results in my paper.
+- train option 1 on ['3roomsh'], test option 1 on ['3roomsh']
+- train option 2 on ['3rooms','3roomsh','4rooms'], test these networks on ['3roomsh']
+- train agent with option 2 init (['3rooms','3roomsh','4rooms']) on ['3roomsh'], test the network on ['3roomsh']
+
+I haven't trained any of these configs until now. 
+- storage/23*
+	- Training RPSF on ['3roomsh']
+- storage/24*
+	- 
+
+
+---
 storage/01-avdsr.weights
 storage/01-loss.p
 Images of the results are stores as config1-*
@@ -43,7 +75,7 @@ Running test3. Same as the relation between 02 and 03. Here between 04 and 05.
 test9.py => generates saved weights for option 1
 test8.py $1 => loads a specific weights and gets performance. (option2: stored in 18)
 test11.py => generates saved weights for option 2
-
+---
 
 To do:
 - Regenerate plots for option 1 and option 2 (least priority)
