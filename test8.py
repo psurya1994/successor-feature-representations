@@ -19,7 +19,8 @@ def avdsr_feature(**kwargs):
     config.c = 1
 
     config.optimizer_fn = lambda params: torch.optim.RMSprop(params, 0.002)
-    config.network_fn = lambda: SRNet(config.action_dim, SRIdentityBody(config.state_dim), hidden_units=(), config=0) #CHECK
+    config.network_fn = lambda: SRNetCNN(config.action_dim, SRIdentityBody(config.state_dim), 
+                                         hidden_units=(2000,), config=0)
     config.replay_fn = lambda: Replay(memory_size=int(4e5), batch_size=10)
 
     config.random_action_prob = LinearSchedule(1, 1, 1e4) # CHECK
@@ -108,7 +109,7 @@ def dsr_feature_init(ref,style1,**kwargs):
 
     config.optimizer_fn = lambda params: torch.optim.RMSprop(params, 0.001)
     config.network_fn = lambda: SRNetCNN(config.action_dim, SRIdentityBody(config.state_dim), 
-                                         hidden_units=(2000,), config=0)
+                                         hidden_units=(2000,), config=style1)
     config.replay_fn = lambda: Replay(memory_size=int(1e5), batch_size=10)
 
     config.random_action_prob = LinearSchedule(1.0, 0.1, 3e4)
