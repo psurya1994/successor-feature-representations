@@ -12,4 +12,4 @@ conda activate default
 
 # 3. Launch your job, tell it to save the model in $SLURM_TMPDIR
 #    and look for the dataset into $SLURM_TMPDIR
-python test6.py
+python test7.py
