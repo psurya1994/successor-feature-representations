@@ -34,11 +34,15 @@ Running test3. Same as the relation between 02 and 03. Here between 04 and 05.
 
 15 -- option 2 learning from scratch. (saving weights at all intervals)
 
-16 -- option 1 learning from scratch. (saving weights at all intervals)
+16 -- option 1 learning from scratch. (no saving weights, testing performance in same)
 
-17 -- option 1, trained with option 2 init (3e5). (saving weights at all intervals)
+<!-- 17 -- option 1, trained with option 2 init (3e5). (saving weights at all intervals) -->
 
 18 -- testing performance of each of the options (15, 16, 17) for varying training iterations. 
+
+test9.py => generates saved weights for option 1
+test8.py $1 => loads a specific weights and gets performance. (option2: stored in 18)
+test11.py => generates saved weights for option 2
 
 
 To do:
