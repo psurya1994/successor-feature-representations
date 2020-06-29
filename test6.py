@@ -90,7 +90,7 @@ def avdsr_feature(ref, **kwargs):
     
     agent = avDSRAgent(config, config.agents, style='DQN')
     if(ref is not None):
-        avdsr.network.load_state_dict(ref, strict=True)
+        agent.network.load_state_dict(ref, strict=True)
 
     #run_steps function below
     config = agent.config
