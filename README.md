@@ -27,6 +27,7 @@ I've been shooting in the dark here, I need to do this in a more organized way. 
 I haven't trained any of these configs until now. 
 - storage/23*
 	- Training RPSF on ['3roomsh']
+	- running same again to ensure it's right, saving in storage/29*
 - storage/24*
 	- Training RPSF on ['3rooms','3roomsh','4rooms']
 - storage/25*
