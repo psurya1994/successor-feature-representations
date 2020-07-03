@@ -37,6 +37,8 @@ I haven't trained any of these configs until now.
 
 lost track of what 30* is, I'm supposed to be much more careful with these things :(
 
+- storage/31* - DQN baseline 3roomsh
+- storage/32* - DQN baseline 4rooms
 
 ---
 storage/01-avdsr.weights

@@ -79,7 +79,7 @@ def runNAgents(function, runs, style1, store=False, freeze=0, ref=None, hu=16):
 h_vec = [16, 64, 128, 250, 500, 676, 1000]
 # h_vec = [16, 32]
 no_runs = 2
-ind='31'
+ind='32'
 
 data = []
 label = []

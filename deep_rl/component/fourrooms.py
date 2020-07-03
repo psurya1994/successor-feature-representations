@@ -12,7 +12,7 @@ import gym
 
 class FourRooms(gym.Env):
 
-    def __init__(self, goal=62, p=0, config=1, layout='3roomsh'):
+    def __init__(self, goal=62, p=0, config=1, layout='4rooms'):
         """
         config -> configouration of the state space
             0 - returns tabular index of the state
@@ -240,7 +240,7 @@ wwwwwwwwwwwww
             return self.render_state().flatten(), reward, done, {}
 
 class FourRoomsMatrix(FourRooms):
-    def __init__(self, goal=62, p=0, layout='3roomsh'):
+    def __init__(self, goal=62, p=0, layout='4rooms'):
         FourRooms.__init__(self, goal=goal, p=p, config=2, layout=layout)
 
 
@@ -249,8 +249,8 @@ class FourRoomsNoTerm(FourRooms):
     Environment with no terminal state but with a probability of dying.
 
     """
-    def __init__(self, p=0, dying=0, config=1, layout='3roomsh'):
-        FourRooms.__init__(self, p=p, config=config, layout='3roomsh')
+    def __init__(self, p=0, dying=0, config=1, layout='4rooms'):
+        FourRooms.__init__(self, p=p, config=config, layout='4rooms')
         self.dying = dying
 
     def render(self):
@@ -299,5 +299,5 @@ class FourRoomsNoTerm(FourRooms):
 
 
 class FourRoomsMatrixNoTerm(FourRoomsNoTerm):
-    def __init__(self, p=0, dying=0.01, layout='3roomsh'):
-        FourRoomsNoTerm.__init__(self, p=p, dying=dying, config=2, layout='3roomsh')
+    def __init__(self, p=0, dying=0.01, layout='4rooms'):
+        FourRoomsNoTerm.__init__(self, p=p, dying=dying, config=2, layout='4rooms')
