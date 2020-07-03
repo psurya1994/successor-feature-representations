@@ -85,7 +85,7 @@ data = []
 label = []
 for hu in h_vec:
 	print('------ Running h='+str(hu))
-	data.append(runNAgents(dsr_feature_init, runs=no_runs, freeze=2, ref=avdsr,style1=0, hu=hu))
+	data.append(runNAgents(dqn_feature, runs=no_runs, freeze=2, ref=avdsr,style1=0, hu=hu))
 	label.append('DQN, h=('+str(hu)+',)')
 
 rewards_dict = dict(zip(label, data))
