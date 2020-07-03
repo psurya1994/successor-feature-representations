@@ -37,7 +37,7 @@ def dqn_feature(hu,**kwargs):
     config.sgd_update_frequency = 4
     config.gradient_clip = 5
     config.eval_interval = int(5e3)
-    config.max_steps = 1e1
+    config.max_steps = 5e4
     config.async_actor = False
     agent = DQNAgent(config)
     #run_steps function below
