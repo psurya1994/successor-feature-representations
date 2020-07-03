@@ -76,9 +76,9 @@ def runNAgents(function, runs, style1, store=False, freeze=0, ref=None, hu=16):
     
     return t_dqn, r_dqn
 
-# h_vec = [16, 150, 300, 450, 600, 676, 750]
-h_vec = [16, 32]
-no_runs = 1
+h_vec = [16, 64, 128, 250, 500, 676, 1000]
+# h_vec = [16, 32]
+no_runs = 2
 ind='31'
 
 data = []
