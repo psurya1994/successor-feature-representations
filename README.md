@@ -40,6 +40,11 @@ lost track of what 30* is, I'm supposed to be much more careful with these thing
 - storage/31* - DQN baseline 3roomsh
 - storage/32* - DQN baseline 4rooms
 
+storage/34* has all the learning plots that I'm putting in my thesis. 
+5-generalization-across-envs.ipynb and 14-visualize-learning-curves.ipynb have been used to generate the final plots. 
+12-* is used to generate the learning speed plots.
+
+
 ---
 storage/01-avdsr.weights
 storage/01-loss.p
