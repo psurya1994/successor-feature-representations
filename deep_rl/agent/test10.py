@@ -68,7 +68,6 @@ class NatureConvBody(nn.Module):
     def forward(self, x):
         y = F.relu(self.conv1(x))
         y = F.relu(self.conv2(y))
-#         y = F.relu(self.conv3(y))
         y = y.view(y.size(0), -1)
         y = F.relu(self.fc4(y))
         return y
