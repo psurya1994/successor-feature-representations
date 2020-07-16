@@ -4,6 +4,7 @@ import torch
 from tqdm.notebook import trange, tqdm
 import random
 import numpy as np
+select_device(0)
 
 def dqn_feature(**kwargs):
     generate_tag(kwargs)
