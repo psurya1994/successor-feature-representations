@@ -23,17 +23,40 @@ def dqn_feature(**kwargs):
     # config.replay_fn = lambda: Replay(memory_size=int(1e4), batch_size=10)
     config.replay_fn = lambda: AsyncReplay(memory_size=int(1e4), batch_size=10)
 
-    config.random_action_prob = LinearSchedule(1.0, 0.1, 3e4)
+    # config.random_action_prob = LinearSchedule(1.0, 0.1, 3e4)
+    # config.discount = 0.99
+    # config.target_network_update_freq = 200
+    # config.exploration_steps = 0
+    # # config.double_q = True
+    # config.double_q = False
+    # config.sgd_update_frequency = 4
+    # config.gradient_clip = 5
+    # config.eval_interval = int(5e3)
+    # config.max_steps = 5e4
+    # config.async_actor = False
+
+    config.optimizer_fn = lambda params: torch.optim.RMSprop(
+        params, lr=0.00025, alpha=0.95, eps=0.01, centered=True)
+
+    config.random_action_prob = LinearSchedule(1.0, 0.01, 1e6)
+
+    # config.replay_fn = lambda: Replay(memory_size=int(1e6), batch_size=32)
+    config.replay_fn = lambda: AsyncReplay(memory_size=int(1e6), batch_size=32)
+
+    config.batch_size = 32
+    config.state_normalizer = ImageNormalizer()
+    config.reward_normalizer = SignNormalizer()
     config.discount = 0.99
-    config.target_network_update_freq = 200
-    config.exploration_steps = 0
-    # config.double_q = True
-    config.double_q = False
+    config.target_network_update_freq = 10000
+    config.exploration_steps = 50000
     config.sgd_update_frequency = 4
     config.gradient_clip = 5
-    config.eval_interval = int(5e3)
-    config.max_steps = 5e4
-    config.async_actor = False
+    config.history_length = 4
+    # config.double_q = True
+    config.double_q = False
+    config.max_steps = int(2e7)
+
+
     agent = DQNAgent(config)
     #run_steps function below
     config = agent.config
