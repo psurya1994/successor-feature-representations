@@ -4,9 +4,6 @@ import torch
 from tqdm.notebook import trange, tqdm
 import random
 import numpy as np
-%load_ext autoreload
-%reload_ext autoreload
-%autoreload 2
 
 def dqn_feature(**kwargs):
     generate_tag(kwargs)
