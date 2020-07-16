@@ -19,6 +19,7 @@ from .fourrooms import * # CHECK
 from .fourrooms_dynamic import * 
 from .lineworld import LineWorld
 from .memory_lineworld import *
+from gym_minigrid.wrappers import *
 
 from ..utils import *
 
@@ -94,6 +95,11 @@ def make_env(env_id, seed, rank, episode_life=True):
             # For everything else
             else:
                 env = gym.make(env_id)
+                if('MiniGrid' in env_id):
+                    env = RGBImgObsWrapper(env) # Get pixel observations
+                    env = ImgObsWrapper(env) # Get rid of the 'mission' field
+                    env = TransposeImage(env)
+
         is_atari = hasattr(gym.envs, 'atari') and isinstance(
             env.unwrapped, gym.envs.atari.atari_env.AtariEnv)
         if is_atari:
