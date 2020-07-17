@@ -70,6 +70,8 @@ def dqn_feature(**kwargs):
         # if config.eval_interval and not agent.total_steps % config.eval_interval:
         #     agent.eval_episodes()
         #     pass
+        if agent.total_steps % 5000:
+            print('progress: ', agent.total_steps/config.max_steps)
         if config.max_steps and agent.total_steps >= config.max_steps:
             return agent
             break
