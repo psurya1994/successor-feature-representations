@@ -36,7 +36,7 @@ def dqn_feature(**kwargs):
     # config.async_actor = False
 
     config.optimizer_fn = lambda params: torch.optim.RMSprop(
-        params, lr=0.00025, alpha=0.95, eps=0.01, centered=True)
+        params, lr=0.001, alpha=0.95, eps=0.001, centered=True)
 
     config.random_action_prob = LinearSchedule(1.0, 0.01, 1e6)
 
@@ -51,10 +51,10 @@ def dqn_feature(**kwargs):
     config.exploration_steps = 50000
     config.sgd_update_frequency = 4
     config.gradient_clip = 5
-    config.history_length = 4
+    # config.history_length = 4
     # config.double_q = True
     config.double_q = False
-    config.max_steps = int(2e7)
+    config.max_steps = int(2e6)
 
 
     agent = DQNAgent(config)
@@ -67,9 +67,9 @@ def dqn_feature(**kwargs):
             agent.save('data/%s-%s-%d' % (agent_name, config.tag, agent.total_steps))
         if config.log_interval and not agent.total_steps % config.log_interval:
             t0 = time.time()
-        if config.eval_interval and not agent.total_steps % config.eval_interval:
-            agent.eval_episodes()
-            pass
+        # if config.eval_interval and not agent.total_steps % config.eval_interval:
+        #     agent.eval_episodes()
+        #     pass
         if config.max_steps and agent.total_steps >= config.max_steps:
             return agent
             break
