@@ -533,12 +533,12 @@ if __name__ == '__main__':
     game = 'HalfCheetah-v2'
     # game = 'Hopper-v2'
     # a2c_continuous(game=game)
-    ppo_continuous(game=game)
+    # ppo_continuous(game=game)
     # ddpg_continuous(game=game)
     # td3_continuous(game=game)
 
     game = 'BreakoutNoFrameskip-v4'
-    # dqn_pixel(game=game)
+    dqn_pixel(game=game)
     # quantile_regression_dqn_pixel(game=game)
     # categorical_dqn_pixel(game=game)
     # a2c_pixel(game=game)
