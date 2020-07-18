@@ -9,7 +9,7 @@ from ..component import *
 from ..utils import *
 import time
 from .BaseAgent import *
-
+import wandb
 
 class DQNActor(BaseActor):
     def __init__(self, config):
@@ -42,7 +42,7 @@ class DQNAgent(BaseAgent):
         self.config = config
         config.lock = mp.Lock()
 
-        self.returns = []
+        # self.returns = []
         
         self.replay = config.replay_fn()
         self.actor = DQNActor(config)
@@ -52,12 +52,15 @@ class DQNAgent(BaseAgent):
         self.target_network = config.network_fn()
         self.target_network.load_state_dict(self.network.state_dict())
         self.optimizer = config.optimizer_fn(self.network.parameters())
-        self.loss_vec = []
+        # self.loss_vec = []
 
         self.actor.set_network(self.network)
 
         self.total_steps = 0
         self.batch_indices = range_tensor(self.replay.batch_size)
+
+        wandb.init(entity="psurya", project="sample-project")
+        wandb.watch_called = False
 
     def close(self):
         close_obj(self.replay)
@@ -82,7 +85,8 @@ class DQNAgent(BaseAgent):
             for i, info_ in enumerate(info):
                 ret = info_['episodic_return']
                 if ret is not None:
-                    self.returns.append([self.total_steps, ret])
+                    # self.returns.append([self.total_steps, ret])
+                    wandb.log({"steps_ret": self.total_steps, "returns": ret})
             
             self.total_steps += 1
             reward = config.reward_normalizer(reward)
@@ -108,7 +112,8 @@ class DQNAgent(BaseAgent):
             q = self.network(states)
             q = q[self.batch_indices, actions]
             loss = (q_next - q).pow(2).mul(0.5).mean()
-            self.loss_vec.append(loss.item())
+            # self.loss_vec.append(loss.item())
+            wandb.log({"steps_loss": self.total_steps, "loss": loss.item()})
             self.optimizer.zero_grad()
             loss.backward()
             nn.utils.clip_grad_norm_(self.network.parameters(), self.config.gradient_clip)
