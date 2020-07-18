@@ -9,7 +9,8 @@
 
 # 1. Load your environment
 module load anaconda
-conda activate default
+conda activate conda_env
+
 
 # 3. Launch your job, tell it to save the model in $SLURM_TMPDIR
 #    and look for the dataset into $SLURM_TMPDIR
