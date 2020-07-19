@@ -32,7 +32,7 @@ def dqn_feature(**kwargs):
 
     config.task_fn = lambda: Task(config.game)
     config.eval_env = config.task_fn()
-    config.action_dim = 3
+    # config.action_dim = 3
 
     config.optimizer_fn = lambda params: torch.optim.RMSprop(
         params, lr=0.001, alpha=0.95, eps=0.001, centered=True)
