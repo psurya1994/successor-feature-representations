@@ -156,7 +156,7 @@ class TransposeImage(gym.ObservationWrapper):
 
 class TransposeImageMini(gym.ObservationWrapper):
     def __init__(self, env=None):
-        super(TransposeImage, self).__init__(env)
+        super(TransposeImageMini, self).__init__(env)
         obs_shape = self.observation_space.shape
         self.observation_space = Box(
             self.observation_space.low[0, 0, 0],
