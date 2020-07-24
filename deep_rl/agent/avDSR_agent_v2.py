@@ -36,7 +36,10 @@ class avDSRActor_v2(BaseActor):
         config = self.config
         
         # Choosing which agent for taking actions
-        if(self.choice == 0):
+
+        if(len(self.agents) == 0):
+            pick.network = lambda a : return np.random.rand(self.config.action_dim,1)
+        elif(self.choice == 0):                
             pick = random.choice(self.agents)
         elif(self.choice == 1):
             self.batch_steps += 1
@@ -66,7 +69,9 @@ class avDSRActor_v2(BaseActor):
         
         # Also estimate next action
         #############
-        if(self.choice == 0):
+        if(len(self.agents) == 0):
+            pick2.network = lambda a : return np.random.rand(self.config.action_dim,1)
+        elif(self.choice == 0):
             pick2 = random.choice(self.agents)
         elif(self.choice == 1):
             pick2 = pick

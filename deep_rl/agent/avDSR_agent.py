@@ -7,6 +7,7 @@ from ..component import *
 from ..utils import *
 import time
 from .BaseAgent import *
+import wandb
 
 class avDSRActor(BaseActor):
     def __init__(self, config, agents, style='DQN', choice=1):
@@ -98,9 +99,9 @@ class avDSRAgent(BaseAgent):
         self.config = config
         config.lock = mp.Lock()
         
-        self.loss_q_vec = []
-        self.loss_psi_vec = []
-        self.loss_vec = []
+        # self.loss_q_vec = []
+        # self.loss_psi_vec = []
+        # self.loss_vec = []
 
         self.replay = config.replay_fn()
         self.choice = config.choice
@@ -114,6 +115,9 @@ class avDSRAgent(BaseAgent):
 
         self.total_steps = 0
         self.batch_indices = range_tensor(self.replay.batch_size) # Need to make this size bigger
+
+        wandb.init(entity="psurya", project="sample-project")
+        wandb.watch_called = False
 
     def close(self):
         close_obj(self.replay)
@@ -179,6 +183,7 @@ class avDSRAgent(BaseAgent):
             self.loss_vec.append(total_loss.item())
             self.loss_psi_vec.append(total_loss.item())
             
+            wandb.log({"steps_loss": self.total_steps, "loss": loss.item(), "loss_psi": loss_psi.item(), "loss_q": loss_q.item()})
             
             self.optimizer.zero_grad()
 #             loss.backward(torch.ones(loss.shape))

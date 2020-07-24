@@ -98,7 +98,7 @@ def make_env(env_id, seed, rank, episode_life=True):
                 if('MiniGrid' in env_id):
                     env = RGBImgObsWrapper(env) # Get pixel observations
                     env = ImgObsWrapper(env) # Get rid of the 'mission' field
-                    env = TransposeImage(env)
+                    env = TransposeImageMini(env)
 
         is_atari = hasattr(gym.envs, 'atari') and isinstance(
             env.unwrapped, gym.envs.atari.atari_env.AtariEnv)
@@ -153,6 +153,19 @@ class TransposeImage(gym.ObservationWrapper):
 
     def observation(self, observation):
         return observation.transpose(2, 0, 1)
+
+class TransposeImageMini(gym.ObservationWrapper):
+    def __init__(self, env=None):
+        super(TransposeImage, self).__init__(env)
+        obs_shape = self.observation_space.shape
+        self.observation_space = Box(
+            self.observation_space.low[0, 0, 0],
+            self.observation_space.high[0, 0, 0],
+            [obs_shape[2], obs_shape[1], obs_shape[0]],
+            dtype=self.observation_space.dtype)
+
+    def observation(self, observation):
+        return observation.transpose(2, 0, 1)/255
 
 
 # The original LayzeFrames doesn't work well
