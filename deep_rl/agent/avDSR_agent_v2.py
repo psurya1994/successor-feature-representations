@@ -8,7 +8,20 @@ from ..utils import *
 import time
 from .BaseAgent import *
 
-# The collecting data part is going to be same as the previous case
+class torch_reshape(torch.nn.Module):
+    def forward(self, x):
+        batch_size = x.shape[0]
+        return x.view(batch_size, 64, 9, 9)
+
+class Flatten(torch.nn.Module):
+    def forward(self, x):
+        batch_size = x.shape[0]
+        return x.view(batch_size, -1)
+    
+class Pick():
+    def __init__(self):
+        self.network = 0
+        
 class avDSRActor_v2(BaseActor):
     def __init__(self, config, agents, style='DQN', choice=1):
         """
@@ -38,7 +51,8 @@ class avDSRActor_v2(BaseActor):
         # Choosing which agent for taking actions
 
         if(len(self.agents) == 0):
-            pick.network = lambda a : np.random.rand(self.config.action_dim,1)
+            pick = Pick()
+            pick.network = lambda a: torch.zeros(self.config.action_dim,1)
         elif(self.choice == 0):                
             pick = random.choice(self.agents)
         elif(self.choice == 1):
@@ -70,7 +84,8 @@ class avDSRActor_v2(BaseActor):
         # Also estimate next action
         #############
         if(len(self.agents) == 0):
-            pick2.network = lambda a : np.random.rand(self.config.action_dim,1)
+            pick2 = Pick()
+            pick2.network = lambda a : torch.zeros(self.config.action_dim,1)
         elif(self.choice == 0):
             pick2 = random.choice(self.agents)
         elif(self.choice == 1):
@@ -94,7 +109,6 @@ class avDSRActor_v2(BaseActor):
         self._state = next_state
         return entry
 
-# The learning part is going to be different.
 class avDSRAgent_v2(BaseAgent):
     def __init__(self, config, agents, style='DQN'):
         """
@@ -187,7 +201,6 @@ class avDSRAgent_v2(BaseAgent):
             
             
             self.optimizer.zero_grad()
-#             loss.backward(torch.ones(loss.shape))
             loss.backward()
 
             nn.utils.clip_grad_norm_(self.network.parameters(), self.config.gradient_clip)
