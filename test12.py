@@ -39,22 +39,22 @@ def dqn_feature(**kwargs):
 #     config.network_fn = lambda: VanillaNet(config.action_dim, FCBody(config.state_dim, hidden_units=(43,)))
     config.network_fn = lambda: VanillaNet(config.action_dim, NatureConvBody(in_channels=3))
 #     print(config.action_dim)
-    config.replay_fn = lambda: Replay(memory_size=int(5e4), batch_size=32)
-#     config.replay_fn = lambda: AsyncReplay(memory_size=int(1e4), batch_size=10)
+    # config.replay_fn = lambda: Replay(memory_size=int(5e4), batch_size=32)
+    config.replay_fn = lambda: AsyncReplay(memory_size=int(5e4), batch_size=32)
     config.batch_size = 32
     config.state_normalizer = ImageNormalizer()
     config.reward_normalizer = SignNormalizer()
 
-    config.random_action_prob = LinearSchedule(1.0, 0.01, 2e5)
+    config.random_action_prob = LinearSchedule(1.0, 0.01, 5e5)
     config.discount = 0.99
-    config.target_network_update_freq = 2000
+    config.target_network_update_freq = 5000
     config.exploration_steps = 10000
     # config.double_q = True
     config.double_q = False
     config.sgd_update_frequency = 4
     config.gradient_clip = 5
     config.eval_interval = int(5e10)
-    config.max_steps = 4e5
+    config.max_steps = 1e6
     config.async_actor = False
     agent = DQNAgent(config)
     #run_steps function below
