@@ -1,7 +1,7 @@
 from deep_rl import *
 import matplotlib.pyplot as plt
 import torch
-from tqdm.notebook import trange, tqdm
+from tqdm import trange, tqdm
 import random
 import numpy as np
 
