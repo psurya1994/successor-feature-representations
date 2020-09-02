@@ -4,7 +4,6 @@ from gym import spaces
 import matplotlib.pyplot as plt
 import random
 from PIL import Image, ImageDraw, ImageFont
-from tqdm.notebook import tqdm
 
 class MemoryLineWorld(gym.Env):
   def __init__(self, size=5, p=0, horizon=100):
