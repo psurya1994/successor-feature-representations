@@ -40,8 +40,8 @@ def dqn_feature(**kwargs):
     config.network_fn = lambda: VanillaNet(config.action_dim, NatureConvBody(in_channels=3))
 #     print(config.action_dim)
     # config.replay_fn = lambda: Replay(memory_size=int(5e4), batch_size=32)
-    config.replay_fn = lambda: AsyncReplay(memory_size=int(2e5), batch_size=64)
-    config.batch_size = 64
+    config.replay_fn = lambda: AsyncReplay(memory_size=int(2e5), batch_size=32)
+    config.batch_size = 32
     config.state_normalizer = ImageNormalizer()
     config.reward_normalizer = SignNormalizer()
 
