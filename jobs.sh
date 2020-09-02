@@ -5,7 +5,7 @@
 #SBATCH --mem=20G                             # Ask for 10 GB of RAM
 #SBATCH --time=12:00:00                        # The job will run for 9 hours
 #SBATCH -o storage/slurm-%j.out  # Write the log on tmp1
-#SBATCH --exclude=rtx3
+#SBATCH --exclude=rtx3,rtx5
 
 # 1. Load your environment
 module load anaconda
@@ -13,4 +13,4 @@ conda activate conda_env
 
 # 3. Launch your job, tell it to save the model in $SLURM_TMPDIR
 #    and look for the dataset into $SLURM_TMPDIR
-python test12.py
+python examples.py
