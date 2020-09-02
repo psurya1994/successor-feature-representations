@@ -1,8 +1,8 @@
 #!/bin/bash
 #SBATCH --partition=long                      # Ask for long job
-#SBATCH --cpus-per-task=4                     # Ask for 4 CPUs
+#SBATCH --cpus-per-task=8                     # Ask for 8 CPUs
 #SBATCH --gres=gpu:1                          # Ask for 1 GPU
-#SBATCH --mem=20G                             # Ask for 10 GB of RAM
+#SBATCH --mem=20G                             # Ask for 20 GB of RAM
 #SBATCH --time=12:00:00                        # The job will run for 9 hours
 #SBATCH -o storage/slurm-%j.out  # Write the log on tmp1
 #SBATCH --exclude=rtx3,rtx5
