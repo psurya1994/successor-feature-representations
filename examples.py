@@ -537,7 +537,8 @@ if __name__ == '__main__':
     # ddpg_continuous(game=game)
     # td3_continuous(game=game)
 
-    game = 'BreakoutNoFrameskip-v4'
+    # game = 'BreakoutNoFrameskip-v4'
+    game = 'MiniGrid-Empty-5x5-v0'
     dqn_pixel(game=game)
     # quantile_regression_dqn_pixel(game=game)
     # categorical_dqn_pixel(game=game)
