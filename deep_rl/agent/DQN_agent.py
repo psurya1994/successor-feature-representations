@@ -59,8 +59,8 @@ class DQNAgent(BaseAgent):
         self.total_steps = 0
         self.batch_indices = range_tensor(self.replay.batch_size)
 
-        wandb.init(entity="psurya", project="sample-project")
-        wandb.watch_called = False
+        # wandb.init(entity="psurya", project="sample-project")
+        # wandb.watch_called = False
 
     def close(self):
         close_obj(self.replay)
@@ -86,7 +86,8 @@ class DQNAgent(BaseAgent):
                 ret = info_['episodic_return']
                 if ret is not None:
                     # self.returns.append([self.total_steps, ret])
-                    wandb.log({"steps_ret": self.total_steps, "returns": ret})
+                    # wandb.log({"steps_ret": self.total_steps, "returns": ret})
+                    pass
             
             self.total_steps += 1
             reward = config.reward_normalizer(reward)
@@ -113,7 +114,7 @@ class DQNAgent(BaseAgent):
             q = q[self.batch_indices, actions]
             loss = (q_next - q).pow(2).mul(0.5).mean()
             # self.loss_vec.append(loss.item())
-            wandb.log({"steps_loss": self.total_steps, "loss": loss.item()})
+            # wandb.log({"steps_loss": self.total_steps, "loss": loss.item()})
             self.optimizer.zero_grad()
             loss.backward()
             nn.utils.clip_grad_norm_(self.network.parameters(), self.config.gradient_clip)
