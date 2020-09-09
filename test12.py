@@ -5,7 +5,10 @@ from tqdm import trange, tqdm
 import random
 import numpy as np
 
-
+REPLAY_SIZE = 2e5
+LR = 0.003
+EPS_END = 1e6
+MAX_STEPS = 4e6
 
 class NatureConvBody(nn.Module):
     def __init__(self, in_channels=4):
@@ -35,17 +38,17 @@ def dqn_feature(**kwargs):
     # config.action_dim = 3
 
     config.optimizer_fn = lambda params: torch.optim.RMSprop(
-        params, lr=0.001, centered=True)
+        params, lr=LR, centered=True)
 #     config.network_fn = lambda: VanillaNet(config.action_dim, FCBody(config.state_dim, hidden_units=(43,)))
     config.network_fn = lambda: VanillaNet(config.action_dim, NatureConvBody(in_channels=3))
 #     print(config.action_dim)
     # config.replay_fn = lambda: Replay(memory_size=int(2e5), batch_size=32)
-    config.replay_fn = lambda: AsyncReplay(memory_size=int(1e5), batch_size=32)
+    config.replay_fn = lambda: AsyncReplay(memory_size=int(REPLAY_SIZE), batch_size=32)
     config.batch_size = 32
     config.state_normalizer = ImageNormalizer()
     config.reward_normalizer = SignNormalizer()
 
-    config.random_action_prob = LinearSchedule(1.0, 0.1, 2e5)
+    config.random_action_prob = LinearSchedule(1.0, 0.01, EPS_END)
     config.discount = 0.99
     config.target_network_update_freq = 5000
     config.exploration_steps = 10000
@@ -54,14 +57,14 @@ def dqn_feature(**kwargs):
     config.sgd_update_frequency = 4
     config.gradient_clip = 5
     config.eval_interval = int(5e10)
-    config.max_steps = 4e5
+    config.max_steps = MAX_STEPS
     config.async_actor = False
     agent = DQNAgent(config)
     #run_steps function below
     config = agent.config
     agent_name = agent.__class__.__name__
     t0 = time.time()
-    for i in tqdm(range(int(config.max_steps))):
+    for i in range(int(config.max_steps)):
         if config.save_interval and not agent.total_steps % config.save_interval:
             agent.save('data/%s-%s-%d' % (agent_name, config.tag, agent.total_steps))
         if config.log_interval and not agent.total_steps % config.log_interval:
