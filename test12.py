@@ -35,7 +35,7 @@ def dqn_feature(**kwargs):
     # config.action_dim = 3
 
     config.optimizer_fn = lambda params: torch.optim.RMSprop(
-        params, lr=0.002, centered=True)
+        params, lr=0.001, centered=True)
 #     config.network_fn = lambda: VanillaNet(config.action_dim, FCBody(config.state_dim, hidden_units=(43,)))
     config.network_fn = lambda: VanillaNet(config.action_dim, NatureConvBody(in_channels=3))
 #     print(config.action_dim)
@@ -45,7 +45,7 @@ def dqn_feature(**kwargs):
     config.state_normalizer = ImageNormalizer()
     config.reward_normalizer = SignNormalizer()
 
-    config.random_action_prob = LinearSchedule(1.0, 0.1, 1e5)
+    config.random_action_prob = LinearSchedule(1.0, 0.1, 2e5)
     config.discount = 0.99
     config.target_network_update_freq = 5000
     config.exploration_steps = 10000
@@ -54,7 +54,7 @@ def dqn_feature(**kwargs):
     config.sgd_update_frequency = 4
     config.gradient_clip = 5
     config.eval_interval = int(5e10)
-    config.max_steps = 2e5
+    config.max_steps = 4e5
     config.async_actor = False
     agent = DQNAgent(config)
     #run_steps function below
