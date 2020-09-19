@@ -183,7 +183,7 @@ class TransformRewardMini(gym.RewardWrapper):
         f (callable): a function that transforms the reward
     """
     def __init__(self, env):
-        super(TransformReward, self).__init__(env)
+        super(TransformRewardMini, self).__init__(env)
 
     def reward(self, reward):
         return int(reward>0)
