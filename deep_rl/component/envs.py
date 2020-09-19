@@ -99,6 +99,7 @@ def make_env(env_id, seed, rank, episode_life=True):
                     env = RGBImgObsWrapper(env) # Get pixel observations
                     env = ImgObsWrapper(env) # Get rid of the 'mission' field
                     env = TransposeImageMini(env)
+                    env = TransformRewardMini(env)
 
         is_atari = hasattr(gym.envs, 'atari') and isinstance(
             env.unwrapped, gym.envs.atari.atari_env.AtariEnv)
@@ -166,6 +167,26 @@ class TransposeImageMini(gym.ObservationWrapper):
 
     def observation(self, observation):
         return observation.transpose(2, 0, 1)/255
+
+class TransformRewardMini(gym.RewardWrapper):
+    r"""Transform the reward via an arbitrary function.
+    Example::
+        >>> import gym
+        >>> env = gym.make('CartPole-v1')
+        >>> env = TransformReward(env, lambda r: 0.01*r)
+        >>> env.reset()
+        >>> observation, reward, done, info = env.step(env.action_space.sample())
+        >>> reward
+        0.01
+    Args:
+        env (Env): environment
+        f (callable): a function that transforms the reward
+    """
+    def __init__(self, env):
+        super(TransformReward, self).__init__(env)
+
+    def reward(self, reward):
+        return int(reward>0)
 
 
 # The original LayzeFrames doesn't work well
