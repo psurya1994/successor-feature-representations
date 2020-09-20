@@ -5,10 +5,7 @@ from tqdm import trange, tqdm
 import random
 import numpy as np
 
-GAME = 'MiniGrid-Empty-5x5-v0'
-READFILE = 'storage/40-avdsr-trained-minigrid.weights'
 
-weights = torch.load(READFILE).state_dict()
 
 def dsr_feature_init(weights,**kwargs):
     generate_tag(kwargs)
@@ -62,5 +59,11 @@ def dsr_feature_init(weights,**kwargs):
     return agent
 
 GAME = 'MiniGrid-Empty-5x5-v0'
+READFILE = 'storage/40-avdsr-trained-minigrid.weights'
+
+weights = torch.load(READFILE).state_dict()
+# Remove psi2q weights, I'm using a deep net for psi2q (weights here are for linear untrained)
+weights.pop('psi2q.layers.0.weight')
+weights.pop('psi2q.layers.0.bias')
 select_device(0)
 agent = dsr_feature_init(game=GAME, freeze=2, weights=weights)
