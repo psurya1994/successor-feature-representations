@@ -14,6 +14,7 @@ from ..component import *
 from ..utils import *
 import time
 from .BaseAgent import *
+import wandb
 
 
 class DSRActor_v2(BaseActor):
@@ -68,6 +69,11 @@ class DSRAgent_v2(BaseAgent):
         self.total_steps = 0
         self.batch_indices = range_tensor(self.replay.batch_size)
 
+        self.is_wb = True
+        if(self.is_wb):
+            wandb.init(entity="psurya", project="sample-project")
+            wandb.watch_called = False
+
     def close(self):
         close_obj(self.replay)
         close_obj(self.actor)
@@ -96,6 +102,8 @@ class DSRAgent_v2(BaseAgent):
                 ret = info_['episodic_return']
                 if ret is not None:
                     self.returns.append([self.total_steps, ret])
+                    if(self.is_wb):
+                        wandb.log({"steps_ret": self.total_steps, "returns": ret})
                     
             self.total_steps += 1
             reward = config.reward_normalizer(reward)
@@ -156,6 +164,9 @@ class DSRAgent_v2(BaseAgent):
             self.loss_vec.append(loss.item())
             self.loss_q_vec.append(loss_q.item())
             self.loss_psi_vec.append(loss_psi.item())
+
+            if(self.is_wb):
+                wandb.log({"steps_loss": self.total_steps, "loss": loss.item()})
             
             if(not np.isfinite(loss.item())):
                 print(' loss has diverged!')
