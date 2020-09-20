@@ -62,4 +62,5 @@ def dsr_feature_init(weights,**kwargs):
     return agent
 
 GAME = 'MiniGrid-Empty-5x5-v0'
+select_device(0)
 agent = dsr_feature_init(game=GAME, freeze=2, weights=weights)
