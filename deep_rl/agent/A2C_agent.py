@@ -8,6 +8,7 @@ from ..network import *
 from ..component import *
 from .BaseAgent import *
 
+import wandb
 
 class A2CAgent(BaseAgent):
     def __init__(self, config):
@@ -18,6 +19,10 @@ class A2CAgent(BaseAgent):
         self.optimizer = config.optimizer_fn(self.network.parameters())
         self.total_steps = 0
         self.states = self.task.reset()
+        self.is_wb = True
+        if(self.is_wb):
+            wandb.init(entity="psurya", project="sample-project")
+            wandb.watch_called = False
 
     def step(self):
         config = self.config
@@ -27,6 +32,14 @@ class A2CAgent(BaseAgent):
             prediction = self.network(config.state_normalizer(states))
             next_states, rewards, terminals, info = self.task.step(to_np(prediction['a']))
             self.record_online_return(info)
+
+            # Recording train returns in list
+            for i, info_ in enumerate(info):
+                ret = info_['episodic_return']
+                if ret is not None:
+                    # self.returns.append([self.total_steps, ret])
+                    if(self.is_wb):
+                        wandb.log({"steps_ret": self.total_steps, "returns": ret})
             rewards = config.reward_normalizer(rewards)
             storage.add(prediction)
             storage.add({'r': tensor(rewards).unsqueeze(-1),
@@ -56,6 +69,9 @@ class A2CAgent(BaseAgent):
         policy_loss = -(log_prob * advantages).mean()
         value_loss = 0.5 * (returns - value).pow(2).mean()
         entropy_loss = entropy.mean()
+
+        if(self.is_wb):
+                wandb.log({"steps_loss": self.total_steps, "policy_loss": policy_loss.item(), "value_loss": value_loss.item(), "entropy_loss": entropy_loss.item()})
 
         self.optimizer.zero_grad()
         (policy_loss - config.entropy_weight * entropy_loss +
