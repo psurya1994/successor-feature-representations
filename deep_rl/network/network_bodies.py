@@ -140,7 +140,7 @@ class SRNetImage_v2(nn.Module):
             0 - typical SR with weights sharing
             1 - learning SR without weights sharing
         """
-        super(SRNetImage, self).__init__()
+        super(SRNetImage_v2, self).__init__()
         self.feature_dim = 512
         self.output_dim = output_dim
         self.gate = gate
