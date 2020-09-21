@@ -166,7 +166,10 @@ class SRNetImage_v2(nn.Module):
 
         phi = self.encoder(tensor(x))
         psi = phi
-        q_est = self.psi2q(psi)
+        q_est = psi
+        for layer in self.psi2q[:-1]:
+            q_est = self.gate(layer(q_est))
+        q_est = self.layers_sr[-1](q_est)
 
         return phi, psi, None, q_est
 
