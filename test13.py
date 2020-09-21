@@ -17,19 +17,19 @@ def dsr_feature_init(weights,**kwargs):
     config.eval_env = config.task_fn()
     config.c = 1
 
-    config.optimizer_fn = lambda params: torch.optim.RMSprop(params, 0.001/2)
+    config.optimizer_fn = lambda params: torch.optim.RMSprop(params, 0.001)
     config.network_fn = lambda: SRNetImage(7, config=1, hidden_units_psi2q=(1024,512))
-    config.replay_fn = lambda: Replay(memory_size=int(1e5), batch_size=10)
+    config.replay_fn = lambda: Replay(memory_size=int(2e5), batch_size=10)
 
-    config.random_action_prob = LinearSchedule(1.0, 0.1, 1e5)
+    config.random_action_prob = LinearSchedule(1.0, 0.1, 3e6)
     config.discount = 0.99
-    config.target_network_update_freq = 200
-    config.exploration_steps = 0
+    config.target_network_update_freq = 1000
+    config.exploration_steps = 10000
     config.double_q = False
     config.sgd_update_frequency = 4
     config.gradient_clip = 5
     config.eval_interval = int(5e3)
-    config.max_steps = 2e5
+    config.max_steps = 5e6
     config.async_actor = False
     
     agent = DSRAgent_v2(config)
