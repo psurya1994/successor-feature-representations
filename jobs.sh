@@ -3,7 +3,7 @@
 #SBATCH --cpus-per-task=8                     # Ask for 8 CPUs
 #SBATCH --gres=gpu:1                          # Ask for 1 GPU
 #SBATCH --mem=20G                             # Ask for 20 GB of RAM
-#SBATCH --time=12:00:00                        # The job will run for 9 hours
+#SBATCH --time=20:00:00                        # The job will run for 9 hours
 #SBATCH -o storage/slurm-%j.out  # Write the log on tmp1
 #SBATCH --exclude=rtx3,rtx5
 
