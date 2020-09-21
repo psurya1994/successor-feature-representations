@@ -155,7 +155,7 @@ class SRNetImage_v2(nn.Module):
         )
 
         # layers for SR
-        dims_fc = (self.feature_dim,) + hidden_units_psi2q + (self.feature_dim * output_dim,)
+        dims_fc = (self.feature_dim,) + hidden_units_psi2q + (output_dim,)
 
         self.psi2q = nn.ModuleList(
             [layer_init_0(nn.Linear(dim_in, dim_out)) for dim_in, dim_out in zip(dims_fc[:-1], dims_fc[1:])])
