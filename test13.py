@@ -18,7 +18,13 @@ def dsr_feature_init(weights,**kwargs):
     config.c = 1
 
     config.optimizer_fn = lambda params: torch.optim.RMSprop(params, 0.001)
-    config.network_fn = lambda: SRNetImage(7, config=1, hidden_units_psi2q=(1024,512))
+
+    # Using SRs
+    # config.network_fn = lambda: SRNetImage(7, config=1, hidden_units_psi2q=(1024,512))
+
+    # Using latent representations
+    config.network_fn = lambda: SRNetImage_v2(7)
+
     config.replay_fn = lambda: Replay(memory_size=int(2e5), batch_size=10)
 
     config.random_action_prob = LinearSchedule(1.0, 0.1, 3e6)

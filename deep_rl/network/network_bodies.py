@@ -132,6 +132,44 @@ class SRNetImage(nn.Module):
         return phi, psi, state_est, q_est
 
 
+class SRNetImage_v2(nn.Module):
+    def __init__(self, output_dim, hidden_units_psi2q=(1024,512), gate=F.relu):
+        """
+        This network has two heads: SR head (SR) and reconstruction head (rec).
+        config -> type of learning on top of state abstraction
+            0 - typical SR with weights sharing
+            1 - learning SR without weights sharing
+        """
+        super(SRNetImage, self).__init__()
+        self.feature_dim = 512
+        self.output_dim = output_dim
+        self.gate = gate
+
+        self.encoder = nn.Sequential(
+            layer_init(nn.Conv2d(3, 32, kernel_size=3, stride=2)),  # b, 16, 10, 10
+            nn.ReLU(True),
+            layer_init(nn.Conv2d(32, 64, kernel_size=3, stride=2)), 
+            nn.ReLU(True),
+            Flatten(),
+            nn.Linear(9 * 9 * 64, self.feature_dim)
+        )
+
+        # layers for SR
+        dims_fc = (self.feature_dim,) + hidden_units_psi2q + (self.feature_dim * output_dim,)
+
+        self.psi2q = nn.ModuleList(
+            [layer_init_0(nn.Linear(dim_in, dim_out)) for dim_in, dim_out in zip(dims_fc[:-1], dims_fc[1:])])
+
+        self.to(Config.DEVICE)
+
+    def forward(self, x):
+
+        phi = self.encoder(tensor(x))
+        psi = phi
+        q_est = self.psi2q(psi)
+
+        return phi, psi, None, q_est
+
 class DDPGConvBody(nn.Module):
     def __init__(self, in_channels=4):
         super(DDPGConvBody, self).__init__()
