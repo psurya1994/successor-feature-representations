@@ -58,6 +58,7 @@ class DQNAgent(BaseAgent):
 
         self.total_steps = 0
         self.batch_indices = range_tensor(self.replay.batch_size)
+        
         try:
             self.is_wb = config.is_wb
         except:
