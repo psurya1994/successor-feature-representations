@@ -58,8 +58,10 @@ class DQNAgent(BaseAgent):
 
         self.total_steps = 0
         self.batch_indices = range_tensor(self.replay.batch_size)
-
-        self.is_wb = True
+        try:
+            self.is_wb = config.is_wb
+        except:
+            self.is_wb = True
         if(self.is_wb):
             wandb.init(entity="psurya", project="sample-project")
             wandb.watch_called = False
