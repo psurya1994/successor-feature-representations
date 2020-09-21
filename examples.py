@@ -539,7 +539,7 @@ if __name__ == '__main__':
 
     # game = 'BreakoutNoFrameskip-v4'
     # game = 'PongNoFrameskip-v4'
-    game = 'Boxing-v0'
+    game = 'BoxingNoFrameskip-v0'
     # dqn_pixel(game=game)
     # quantile_regression_dqn_pixel(game=game)
     # categorical_dqn_pixel(game=game)
