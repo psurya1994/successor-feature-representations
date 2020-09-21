@@ -20,10 +20,10 @@ def dsr_feature_init(weights,**kwargs):
     config.optimizer_fn = lambda params: torch.optim.RMSprop(params, 0.001)
 
     # Using SRs
-    # config.network_fn = lambda: SRNetImage(7, config=1, hidden_units_psi2q=(1024,512))
+    config.network_fn = lambda: SRNetImage(7, config=1, hidden_units_psi2q=(1024,512))
 
     # Using latent representations
-    config.network_fn = lambda: SRNetImage_v2(7)
+    # config.network_fn = lambda: SRNetImage_v2(7)
 
     config.replay_fn = lambda: Replay(memory_size=int(2e5), batch_size=10)
 
@@ -49,16 +49,67 @@ def dsr_feature_init(weights,**kwargs):
         if config.save_interval and not agent.total_steps % config.save_interval:
             agent.save('data/%s-%s-%d' % (agent_name, config.tag, agent.total_steps))
         if config.log_interval and not agent.total_steps % config.log_interval:
-#             agent.logger.info('steps %d, %.2f steps/s' % (agent.total_steps, config.log_interval / (time.time() - t0)))
+            agent.logger.info('steps %d, %.2f steps/s' % (agent.total_steps, config.log_interval / (time.time() - t0)))
             t0 = time.time()
         if config.eval_interval and not agent.total_steps % config.eval_interval:
             print(agent.total_steps)
-#             agent.eval_episodes()
+            # agent.eval_episodes()
             pass
         if config.max_steps and agent.total_steps >= config.max_steps:
             return agent
             break
-#         import pdb; pdb.set_trace()
+        # import pdb; pdb.set_trace()
+        agent.step()
+        agent.switch_task()
+        
+    return agent
+
+def dqn_feature(weights, **kwargs):
+    generate_tag(kwargs)
+    kwargs.setdefault('log_level', 0)
+    config = Config()
+    config.merge(kwargs)
+
+    config.task_fn = lambda: Task(config.game)
+    config.eval_env = config.task_fn()
+
+    config.optimizer_fn = lambda params: torch.optim.RMSprop(params, 0.001)
+    config.network_fn = lambda: SRNetImage_v2(7)
+    config.replay_fn = lambda: Replay(memory_size=int(2e5), batch_size=10)
+
+    config.random_action_prob = LinearSchedule(1.0, 0.1, 3e6)
+    config.discount = 0.99
+    config.target_network_update_freq = 1000
+    config.exploration_steps = 10000
+    # config.double_q = True
+    config.double_q = False
+    config.sgd_update_frequency = 4
+    config.gradient_clip = 5
+    config.eval_interval = int(5e3)
+    config.max_steps = 1e5
+    config.async_actor = False
+
+    agent = DQNAgent_v2(config)
+    #run_steps function below
+    config = agent.config
+    agent_name = agent.__class__.__name__
+    if(weights is not None):
+        print(agent.network.load_state_dict(weights, strict=False))
+    t0 = time.time()
+    while True:
+        if config.save_interval and not agent.total_steps % config.save_interval:
+            agent.save('data/%s-%s-%d' % (agent_name, config.tag, agent.total_steps))
+        if config.log_interval and not agent.total_steps % config.log_interval:
+            agent.logger.info('steps %d, %.2f steps/s' % (agent.total_steps, config.log_interval / (time.time() - t0)))
+            t0 = time.time()
+        if config.eval_interval and not agent.total_steps % config.eval_interval:
+            print(agent.total_steps)
+            # agent.eval_episodes()
+            pass
+        if config.max_steps and agent.total_steps >= config.max_steps:
+            return agent
+            break
+        # import pdb; pdb.set_trace()
         agent.step()
         agent.switch_task()
         
@@ -77,4 +128,5 @@ for key in to_remove:
     weights.pop(key)
 
 select_device(0)
-agent = dsr_feature_init(game=GAME, freeze=2, weights=weights)
+# agent = dsr_feature_init(game=GAME, freeze=2, weights=weights)
+agent = dqn_feature(game=GAME, weights=weights)

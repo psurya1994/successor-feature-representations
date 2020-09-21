@@ -164,14 +164,12 @@ class SRNetImage_v2(nn.Module):
 
     def forward(self, x):
 
-        phi = self.encoder(tensor(x))
-        psi = phi
-        q_est = psi
+        q_est = self.encoder(tensor(x))
         for layer in self.psi2q[:-1]:
             q_est = self.gate(layer(q_est))
         q_est = self.psi2q[-1](q_est)
 
-        return phi, psi, None, q_est
+        return q_est
 
 class DDPGConvBody(nn.Module):
     def __init__(self, in_channels=4):
