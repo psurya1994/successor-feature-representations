@@ -68,8 +68,13 @@ GAME = 'MiniGrid-Empty-5x5-v0'
 READFILE = 'storage/40-avdsr-trained-minigrid.weights'
 
 weights = torch.load(READFILE).state_dict()
+
 # Remove psi2q weights, I'm using a deep net for psi2q (weights here are for linear untrained)
-weights.pop('psi2q.layers.0.weight')
-weights.pop('psi2q.layers.0.bias')
+# to_remove = ['psi2q.layers.0.weight', 'psi2q.layers.0.bias'] # For using M(s,s') representatiosn
+to_remove = [ 'decoder.0.weight', 'decoder.0.bias', 'decoder.2.weight', 'decoder.2.bias', 'decoder.4.weight', 'decoder.4.bias', 'layers_sr.0.weight', 'layers_sr.0.bias', 'layers_sr.1.weight', 'layers_sr.1.bias', 'psi2q.layers.0.weight', 'psi2q.layers.0.bias'] # For using phi(s) representatiosn
+
+for key in to_remove:
+    weights.pop(key)
+
 select_device(0)
 agent = dsr_feature_init(game=GAME, freeze=2, weights=weights)
