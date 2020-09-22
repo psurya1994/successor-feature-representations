@@ -60,7 +60,7 @@ class NatureConvBody(nn.Module):
 
 class MinigridConvBody(nn.Module):
     def __init__(self, in_channels=3):
-        super(NatureConvBody, self).__init__()
+        super(MinigridConvBody, self).__init__()
         self.feature_dim = 512
         self.conv1 = layer_init(nn.Conv2d(in_channels, 32, kernel_size=3, stride=2))
         self.conv2 = layer_init(nn.Conv2d(32, 64, kernel_size=3, stride=2))
