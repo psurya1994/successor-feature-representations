@@ -267,7 +267,7 @@ def a2c_pixel_minigrid(**kwargs):
     config.task_fn = lambda: Task(config.game, num_envs=config.num_workers)
     config.eval_env = Task(config.game)
     config.optimizer_fn = lambda params: torch.optim.RMSprop(params, lr=1e-4, alpha=0.99, eps=1e-5)
-    config.network_fn = lambda: CategoricalActorCriticNet(config.state_dim, config.action_dim, MinigridConvBody(in_channels=config.action_dim))
+    config.network_fn = lambda: CategoricalActorCriticNet(config.state_dim, config.action_dim, MinigridConvBody())
     config.state_normalizer = ImageNormalizer()
     config.reward_normalizer = SignNormalizer()
     config.discount = 0.99
