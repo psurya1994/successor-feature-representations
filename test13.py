@@ -86,7 +86,7 @@ def dqn_feature(weights, **kwargs):
     config.sgd_update_frequency = 4
     config.gradient_clip = 5
     config.eval_interval = int(5e3)
-    config.max_steps = 1e5
+    config.max_steps = 5e6
     config.async_actor = False
 
     agent = DQNAgent_v2(config)
