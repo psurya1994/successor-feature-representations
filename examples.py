@@ -262,7 +262,6 @@ def a2c_pixel_minigrid(**kwargs):
     kwargs.setdefault('log_level', 0)
     config = Config()
     config.merge(kwargs)
-    config.action_dim = 3
 
     config.num_workers = 16
     config.task_fn = lambda: Task(config.game, num_envs=config.num_workers)
