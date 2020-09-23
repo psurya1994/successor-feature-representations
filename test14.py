@@ -6,7 +6,7 @@ import random
 import numpy as np
 
 FEATURE_DIMS = 512
-VERSION = 'phi'
+VERSION = 'psi'
 
 def dqn_feature_v2(weights, **kwargs):
     generate_tag(kwargs)
@@ -66,7 +66,7 @@ def dqn_feature_v2(weights, **kwargs):
         
     return agent
 
-GAME = 'MiniGrid-Empty-5x5-v0'
+GAME = 'BoxingNoFrameskip-v0'
 READFILE = 'storage/41-avdsr-trained-boxing-' + str(FEATURE_DIMS) + '.weights'
 
 weights = torch.load(READFILE).state_dict()
@@ -83,4 +83,4 @@ for key in to_remove:
 
 select_device(0)
 # agent = dsr_feature_init(game=GAME, freeze=2, weights=weights)
-agent = dqn_feature_v2(game=GAME, weights=weights, is_wb=False)
+agent = dqn_feature_v2(game=GAME, weights=weights, is_wb=True)
