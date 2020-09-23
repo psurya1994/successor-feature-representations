@@ -5,7 +5,7 @@ from tqdm import trange, tqdm
 import random
 import numpy as np
 
-FEATURE_DIMS = 2048
+FEATURE_DIMS = 512
 VERSION = 'phi'
 
 def dqn_feature_v2(weights, **kwargs):
@@ -67,7 +67,7 @@ def dqn_feature_v2(weights, **kwargs):
     return agent
 
 GAME = 'MiniGrid-Empty-5x5-v0'
-READFILE = 'storage/41-avdsr-trained-boxing-' + FEATURE_DIMS + '.weights'
+READFILE = 'storage/41-avdsr-trained-boxing-' + str(FEATURE_DIMS) + '.weights'
 
 weights = torch.load(READFILE).state_dict()
 
