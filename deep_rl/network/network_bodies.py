@@ -147,7 +147,7 @@ class SRNetImage(nn.Module):
         return phi, psi, state_est, q_est
 
 class SRNetNature_v2_psi(nn.Module):
-    def __init__(self, output_dim, feature_dim=512, hidden_units_sr=(512*4,), hidden_units_psi2q=(2048,512)):
+    def __init__(self, output_dim, feature_dim=512, hidden_units_sr=(512*4,), hidden_units_psi2q=(2048,512), gate=F.relu):
         """
         This network has two heads: SR head (SR) and reconstruction head (rec).
         config -> type of learning on top of state abstraction
@@ -195,7 +195,7 @@ class SRNetNature_v2_psi(nn.Module):
             psi = self.gate(layer(psi))
         psi = self.layers_sr[-1](psi)
         psi = psi.view(psi.size(0), self.output_dim, self.feature_dim) # shape: b x action_dim x state_dim
-        
+
         q_est = self.psi2q(psi)
 
         return q_est
