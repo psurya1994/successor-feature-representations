@@ -194,9 +194,11 @@ class SRNetNature_v2_psi(nn.Module):
         for layer in self.layers_sr[:-1]:
             psi = self.gate(layer(psi))
         psi = self.layers_sr[-1](psi)
-        psi = psi.view(psi.size(0), self.output_dim, self.feature_dim) # shape: b x action_dim x state_dim
 
-        q_est = self.psi2q(psi)
+        q_est = psi
+        for layer in self.psi2q[:-1]:
+            q_est = self.gate(layer(q_est))
+        q_est = self.psi2q[-1](q_est)
 
         return q_est
 
