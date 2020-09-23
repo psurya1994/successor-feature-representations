@@ -146,6 +146,99 @@ class SRNetImage(nn.Module):
 
         return phi, psi, state_est, q_est
 
+class SRNetNature_v2_psi(nn.Module):
+    def __init__(self, output_dim, feature_dim=512, hidden_units_sr=(512*4,), hidden_units_psi2q=(2048,512)):
+        """
+        This network has two heads: SR head (SR) and reconstruction head (rec).
+        config -> type of learning on top of state abstraction
+            0 - typical SR with weights sharing
+            1 - learning SR without weights sharing
+        """
+        super(SRNetNature_v2_psi, self).__init__()
+        self.feature_dim = feature_dim
+        self.output_dim = output_dim
+        self.gate = gate
+        in_channels = 4
+        
+        self.encoder = nn.Sequential(
+            layer_init(nn.Conv2d(in_channels, 32, kernel_size=8, stride=4)),  # b, 16, 10, 10
+            nn.ReLU(True),
+            layer_init(nn.Conv2d(32, 64, kernel_size=4, stride=2)), 
+            nn.ReLU(True),
+            layer_init(nn.Conv2d(64, 64, kernel_size=3, stride=1)), 
+            nn.ReLU(True),
+            Flatten(),
+            nn.Linear(7 * 7 * 64, self.feature_dim)
+        )
+
+        # layers for SR
+        dims_sr = (self.feature_dim,) + hidden_units_sr + (self.feature_dim * output_dim,)
+        self.layers_sr = nn.ModuleList(
+            [layer_init_0(nn.Linear(dim_in, dim_out)) for dim_in, dim_out in zip(dims_sr[:-1], dims_sr[1:])])
+
+        # layers for FC
+        dims_fc = (self.feature_dim * output_dim,) + hidden_units_psi2q + (output_dim,)
+        self.psi2q = nn.ModuleList(
+            [layer_init_0(nn.Linear(dim_in, dim_out)) for dim_in, dim_out in zip(dims_fc[:-1], dims_fc[1:])])
+        self.to(Config.DEVICE)
+
+        self.to(Config.DEVICE)
+
+    def forward(self, x):
+
+        # Finding the latent layer
+        phi = self.encoder(tensor(x)) # shape: b x state_dim
+
+        # Estimating the SR from the latent layer
+        psi = phi
+        for layer in self.layers_sr[:-1]:
+            psi = self.gate(layer(psi))
+        psi = self.layers_sr[-1](psi)
+        psi = psi.view(psi.size(0), self.output_dim, self.feature_dim) # shape: b x action_dim x state_dim
+        
+        q_est = self.psi2q(psi)
+
+        return q_est
+
+class SRNetNature_v2_phi(nn.Module):
+    def __init__(self, output_dim, feature_dim=512, hidden_units_psi2q=(2048,512), gate=F.relu, config=1):
+        """
+        This network has two heads: SR head (SR) and reconstruction head (rec).
+        config -> type of learning on top of state abstraction
+            0 - typical SR with weights sharing
+            1 - learning SR without weights sharing
+        """
+        super(SRNetNature_v2_phi, self).__init__()
+        self.feature_dim = feature_dim
+        self.output_dim = output_dim
+        self.gate = gate
+        in_channels = 4
+        
+        self.encoder = nn.Sequential(
+            layer_init(nn.Conv2d(in_channels, 32, kernel_size=8, stride=4)),  # b, 16, 10, 10
+            nn.ReLU(True),
+            layer_init(nn.Conv2d(32, 64, kernel_size=4, stride=2)), 
+            nn.ReLU(True),
+            layer_init(nn.Conv2d(64, 64, kernel_size=3, stride=1)), 
+            nn.ReLU(True),
+            Flatten(),
+            nn.Linear(7 * 7 * 64, self.feature_dim)
+        )
+
+        # layers for FC
+        dims_fc = (self.feature_dim,) + hidden_units_psi2q + (output_dim,)
+        self.psi2q = nn.ModuleList(
+            [layer_init_0(nn.Linear(dim_in, dim_out)) for dim_in, dim_out in zip(dims_fc[:-1], dims_fc[1:])])
+        self.to(Config.DEVICE)
+
+    def forward(self, x):
+
+        q_est = self.encoder(tensor(x))
+        for layer in self.psi2q[:-1]:
+            q_est = self.gate(layer(q_est))
+        q_est = self.psi2q[-1](q_est)
+
+        return q_est
 
 class SRNetImage_v2(nn.Module):
     def __init__(self, output_dim, hidden_units_psi2q=(1024,512), gate=F.relu):

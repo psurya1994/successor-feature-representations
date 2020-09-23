@@ -64,7 +64,7 @@ def dsr_feature_init(weights,**kwargs):
         
     return agent
 
-def dqn_feature(weights, **kwargs):
+def dqn_feature_v2(weights, **kwargs):
     generate_tag(kwargs)
     kwargs.setdefault('log_level', 0)
     config = Config()
@@ -129,4 +129,4 @@ for key in to_remove:
 
 select_device(0)
 # agent = dsr_feature_init(game=GAME, freeze=2, weights=weights)
-agent = dqn_feature(game=GAME, weights=weights)
+agent = dqn_feature_v2(game=GAME, weights=weights)

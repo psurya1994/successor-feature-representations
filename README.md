@@ -6,3 +6,4 @@ divine-bush-69: A2C on boxing working
 72: A2C on Pong
 85: A2C on Minigrid, it nails the task in no time. (rewards: 1)
 73, 80: learning using psi(s) and phi(s) representations respectively. (rewards: 1) 
+86: Running DQN from examples.py on MiniGrid - OOM, doesn't do very well.
