@@ -1,3 +1,9 @@
+Additional changes made:
+- Added `wandb` tracking for DQN
+
+This repo has been adapted from [here](https://github.com/ShangtongZhang/DeepRL).
+
+---
 # DeepRL
 
 > If you have any question or want to report a bug, please open an issue instead of emailing me directly.  

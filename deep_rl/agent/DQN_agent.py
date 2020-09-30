@@ -9,6 +9,7 @@ from ..component import *
 from ..utils import *
 import time
 from .BaseAgent import *
+import wandb
 
 
 class DQNActor(BaseActor):
@@ -63,6 +64,16 @@ class DQNAgent(BaseAgent):
         self.actor.set_network(self.network)
         self.total_steps = 0
 
+        try:
+            self.is_wb = config.is_wb
+        except:
+            print('is_wb config not found, using deafult.')
+            self.is_wb = True
+
+        if(self.is_wb):
+            wandb.init(entity="psurya", project="sample-project")
+            wandb.watch_called = False
+
     def close(self):
         close_obj(self.replay)
         close_obj(self.actor)
@@ -102,7 +113,16 @@ class DQNAgent(BaseAgent):
         config = self.config
         transitions = self.actor.step()
         for states, actions, rewards, next_states, dones, info in transitions:
-            self.record_online_return(info)
+
+            # Recording results
+            self.record_online_return(info) # to log, screen
+            for i, info_ in enumerate(info): # to wandb
+                ret = info_['episodic_return']
+                if ret is not None:
+                    if(self.is_wb):
+                        wandb.log({"steps_ret": self.total_steps, "returns": ret})
+
+
             self.total_steps += 1
             self.replay.feed(dict(
                 state=np.array([s[-1] if isinstance(s, LazyFrames) else s for s in states]),
@@ -127,6 +147,9 @@ class DQNAgent(BaseAgent):
                 loss = loss.mul(weights)
 
             loss = self.reduce_loss(loss)
+            if(self.is_wb):
+                wandb.log({"steps_loss": self.total_steps, "loss": loss.item()})
+
             self.optimizer.zero_grad()
             loss.backward()
             nn.utils.clip_grad_norm_(self.network.parameters(), self.config.gradient_clip)
