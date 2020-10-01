@@ -112,6 +112,33 @@ class SRNetNature_v2_phi(nn.Module):
 
         return q_est
 
+class Psi2QNet(nn.Module):
+    def __init__(self, output_dim, feature_dim):
+        super(Psi2QNet, self).__init__()
+        self.w = Parameter(torch.Tensor(feature_dim))
+        nn.init.constant_(self.w, 0) # CHECK for better initialization
+        self.to(Config.DEVICE)
+    
+    def forward(self, psi):
+        return torch.matmul(psi, self.w)
+
+class Psi2QNetFC(nn.Module):
+    def __init__(self, output_dim, feature_dim, hidden_units=(), gate=F.relu):
+        super(Psi2QNetFC, self).__init__()
+
+        dims = (feature_dim*output_dim,) + hidden_units + (output_dim,)
+        self.layers = nn.ModuleList(
+            [layer_init(nn.Linear(dim_in, dim_out)) for dim_in, dim_out in zip(dims[:-1], dims[1:])])
+        self.gate = gate
+        self.to(Config.DEVICE)
+    
+    def forward(self, psi):
+        out = psi.view(psi.size(0), -1)
+        for layer in self.layers[:-1]:
+            out = self.gate(layer(out))
+        out = self.layers[-1](out)
+        return out
+
 class SRNetImage(nn.Module):
     def __init__(self, output_dim, hidden_units_sr=(512*4,), hidden_units_psi2q=(), gate=F.relu, config=1):
         """
