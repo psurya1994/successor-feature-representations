@@ -96,7 +96,7 @@ def dqn_pixel(**kwargs):
     config.async_actor = True
     run_steps(DQNAgent(config))
 
-def retrain_dqn_feature(version, weights, **kwargs):
+def retrain_dqn_feature(**kwargs):
     """
         version -> specify phi or psi
         weights -> specify weights init
@@ -118,7 +118,7 @@ def retrain_dqn_feature(version, weights, **kwargs):
         params, lr=0.005, alpha=0.98, eps=1e-4, centered=True)
 
 
-    if(version == 'phi'):
+    if(config.version == 'phi'):
         # For psi version
         config.network_fn = lambda: SRNetNature_v2_phi(output_dim=config.action_dim, feature_dim=512, hidden_units_psi2q=(2048,512))
     else:
@@ -151,11 +151,7 @@ def retrain_dqn_feature(version, weights, **kwargs):
     config.gradient_clip = 5
     config.double_q = False
     config.async_actor = True
-    agent = DQNAgent_v2(config)
-    import pdb; pdb.set_trace()
-    if(weights is not None):
-        print(agent.network.load_state_dict(weights, strict=False))
-    run_steps(agent)
+    run_steps(DQNAgent_v2(config))
 
 if __name__ == '__main__':
     mkdir('log')
@@ -185,6 +181,6 @@ if __name__ == '__main__':
     # for key in to_remove:
     #     weights.pop(key)
 
-    # retrain_dqn_feature(weights=weights, version=version, game=game, n_step=1, replay_cls=UniformReplay, async_replay=False)
+    retrain_dqn_feature(weights_file=READFILE, version=version, game=game, n_step=1, replay_cls=UniformReplay, async_replay=False)
 
-    dqn_pixel(game=game, n_step=1, replay_cls=UniformReplay, async_replay=False)
+    # dqn_pixel(game=game, n_step=1, replay_cls=UniformReplay, async_replay=False)
