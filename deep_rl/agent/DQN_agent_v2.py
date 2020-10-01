@@ -78,7 +78,7 @@ class DQNAgent_v2(BaseAgent):
         if(True):
             weights = torch.load(config.weights_file).state_dict()
 
-            if(self.version == 'phi'):
+            if(config.version == 'phi'):
                 # For phi version
                 to_remove = ['decoder.0.weight', 'decoder.0.bias', 'decoder.2.weight', 'decoder.2.bias', 'decoder.4.weight', 'decoder.4.bias', 'decoder.6.weight', 'decoder.6.bias', 'layers_sr.0.weight', 'layers_sr.0.bias', 'layers_sr.1.weight', 'layers_sr.1.bias', 'psi2q.layers.0.weight', 'psi2q.layers.0.bias']
             else:
