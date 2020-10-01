@@ -70,7 +70,7 @@ class SRNetNature_v2_psi(nn.Module):
             q_est = self.gate(layer(q_est))
         q_est = self.psi2q[-1](q_est)
 
-        return q_est
+        return dict(q=q_est)
 
 class SRNetNature_v2_phi(nn.Module):
     def __init__(self, output_dim, feature_dim=512, hidden_units_psi2q=(2048,512), gate=F.relu, config=1):
@@ -110,7 +110,7 @@ class SRNetNature_v2_phi(nn.Module):
             q_est = self.gate(layer(q_est))
         q_est = self.psi2q[-1](q_est)
 
-        return q_est
+        return dict(q=q_est)
 
 class Psi2QNet(nn.Module):
     def __init__(self, output_dim, feature_dim):
