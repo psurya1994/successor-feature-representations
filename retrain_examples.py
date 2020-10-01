@@ -106,7 +106,7 @@ def retrain_dqn_feature(version, weights, **kwargs):
     kwargs.setdefault('n_step', 1)
     kwargs.setdefault('replay_cls', UniformReplay)
     kwargs.setdefault('async_replay', True)
-    kwargs.setdefault('is_wb', True)
+    kwargs.setdefault('is_wb', False)
     config = Config()
     config.merge(kwargs)
 
@@ -169,6 +169,7 @@ if __name__ == '__main__':
 
     READFILE = '/home/mila/p/penmetss/trash/DeepRLv2/storage/41-avdsr-trained-boxing-512.weights'
     version = 'psi'
+    torch.nn.Module.dump_patches = True
 
     weights = torch.load(READFILE).state_dict()
 
