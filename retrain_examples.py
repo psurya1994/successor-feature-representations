@@ -57,6 +57,7 @@ def dqn_pixel(**kwargs):
     kwargs.setdefault('n_step', 1)
     kwargs.setdefault('replay_cls', UniformReplay)
     kwargs.setdefault('async_replay', True)
+    kwargs.setdefault('is_wb', False)
     config = Config()
     config.merge(kwargs)
 
@@ -170,19 +171,19 @@ if __name__ == '__main__':
 
     READFILE = '/home/mila/p/penmetss/trash/DeepRLv2/storage/41-avdsr-trained-boxing-512.weights'
     version = 'psi'
-    torch.nn.Module.dump_patches = True
+    # torch.nn.Module.dump_patches = True
 
-    weights = torch.load(READFILE).state_dict()
+    # weights = torch.load(READFILE).state_dict()
 
-    if(version == 'phi'):
-        # For phi version
-        to_remove = ['decoder.0.weight', 'decoder.0.bias', 'decoder.2.weight', 'decoder.2.bias', 'decoder.4.weight', 'decoder.4.bias', 'decoder.6.weight', 'decoder.6.bias', 'layers_sr.0.weight', 'layers_sr.0.bias', 'layers_sr.1.weight', 'layers_sr.1.bias', 'psi2q.layers.0.weight', 'psi2q.layers.0.bias']
-    else:
-        # For psi version
-        to_remove = ['decoder.0.weight', 'decoder.0.bias', 'decoder.2.weight', 'decoder.2.bias', 'decoder.4.weight', 'decoder.4.bias', 'decoder.6.weight', 'decoder.6.bias', 'psi2q.layers.0.weight', 'psi2q.layers.0.bias']
+    # if(version == 'phi'):
+    #     # For phi version
+    #     to_remove = ['decoder.0.weight', 'decoder.0.bias', 'decoder.2.weight', 'decoder.2.bias', 'decoder.4.weight', 'decoder.4.bias', 'decoder.6.weight', 'decoder.6.bias', 'layers_sr.0.weight', 'layers_sr.0.bias', 'layers_sr.1.weight', 'layers_sr.1.bias', 'psi2q.layers.0.weight', 'psi2q.layers.0.bias']
+    # else:
+    #     # For psi version
+    #     to_remove = ['decoder.0.weight', 'decoder.0.bias', 'decoder.2.weight', 'decoder.2.bias', 'decoder.4.weight', 'decoder.4.bias', 'decoder.6.weight', 'decoder.6.bias', 'psi2q.layers.0.weight', 'psi2q.layers.0.bias']
 
-    for key in to_remove:
-        weights.pop(key)
+    # for key in to_remove:
+    #     weights.pop(key)
 
     # retrain_dqn_feature(weights=weights, version=version, game=game, n_step=1, replay_cls=UniformReplay, async_replay=False)
 
