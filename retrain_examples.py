@@ -151,6 +151,7 @@ def retrain_dqn_feature(version, weights, **kwargs):
     config.double_q = False
     config.async_actor = True
     agent = DQNAgent_v2(config)
+    import pdb; pdb.set_trace()
     if(weights is not None):
         print(agent.network.load_state_dict(weights, strict=False))
     run_steps(agent)
