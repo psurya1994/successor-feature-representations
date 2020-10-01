@@ -3,6 +3,16 @@ Additional changes made:
 
 This repo has been adapted from [here](https://github.com/ShangtongZhang/DeepRL).
 
+`results/BoxingNoFrameskip-v0-async_replay_False-n_step_1-replay_cls_UniformReplay-run-0-200929-164241.txt` -- results of training DQN on default parameters for Boxing-v0
+
+To setup on Mila cluster, run the following commands:
+```
+cd ~
+module load python/3.6
+source venv-deeprl-py36/bin/activate
+cd projects/successor-feature-representations
+```
+
 ---
 # DeepRL
 

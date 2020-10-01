@@ -274,5 +274,8 @@ class ReplayWrapper(mp.Process):
         self.pipe.send([self.UPDATE_PRIORITIES, info])
 
     def close(self):
-        self.pipe.send([self.EXIT, None])
-        self.pipe.close()
+        try:
+            self.pipe.send([self.EXIT, None])
+            self.pipe.close()
+        except:
+            print('WARNING: Failure to close ReplayWrapper.')

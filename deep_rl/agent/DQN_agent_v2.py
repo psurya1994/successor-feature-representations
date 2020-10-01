@@ -4,6 +4,8 @@
 # declaration at the top                                              #
 #######################################################################
 
+# Same as DQN_agent, but learns only psi2q parameters in the network
+
 from ..network import *
 from ..component import *
 from ..utils import *
@@ -11,7 +13,7 @@ import time
 from .BaseAgent import *
 import wandb
 
-class DQNActor(BaseActor):
+class DQNActor_v2(BaseActor):
     def __init__(self, config):
         BaseActor.__init__(self, config)
         self.config = config
@@ -45,20 +47,20 @@ class DQNActor(BaseActor):
         return entry
 
 
-class DQNAgent(BaseAgent):
+class DQNAgent_v2(BaseAgent):
     def __init__(self, config):
         BaseAgent.__init__(self, config)
         self.config = config
         config.lock = mp.Lock()
 
         self.replay = config.replay_fn()
-        self.actor = DQNActor(config)
+        self.actor = DQNActor_v2(config)
 
         self.network = config.network_fn()
         self.network.share_memory()
         self.target_network = config.network_fn()
         self.target_network.load_state_dict(self.network.state_dict())
-        self.optimizer = config.optimizer_fn(self.network.parameters())
+        self.optimizer = config.optimizer_fn(self.network.psi2q.parameters())
 
         self.actor.set_network(self.network)
         self.total_steps = 0
