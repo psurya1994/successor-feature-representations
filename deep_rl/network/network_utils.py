@@ -26,6 +26,16 @@ def layer_init(layer, w_scale=1.0):
     nn.init.constant_(layer.bias.data, 0)
     return layer
 
+def layer_uniform(layer):
+    nn.init.uniform_(layer.weight.data)
+    nn.init.uniform_(layer.bias.data)
+    return layer
+
+def layer_init_0(layer):
+    layer.weight.data.fill_(0)
+    layer.bias.data.fill_(0)
+    return layer
+
 
 # Adapted from https://github.com/saj1919/RL-Adventure/blob/master/5.noisy%20dqn.ipynb
 class NoisyLinear(nn.Module):
