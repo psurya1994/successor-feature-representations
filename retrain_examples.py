@@ -120,7 +120,7 @@ def retrain_dqn_feature(**kwargs):
 
     if(config.version == 'phi'):
         # For psi version
-        config.network_fn = lambda: SRNetNature_v2_phi(output_dim=config.action_dim, feature_dim=512, hidden_units_psi2q=(2048,512))
+        config.network_fn = lambda: SRNetNature_v2_phi(output_dim=config.action_dim, feature_dim=512, hidden_units_psi2q=(2048,1024,512,256))
     else:
         # For psi version
         config.network_fn = lambda: SRNetNature_v2_psi(output_dim=config.action_dim, feature_dim=512, hidden_units_sr=(512*4,), hidden_units_psi2q=(2048,512))

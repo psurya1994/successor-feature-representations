@@ -13,6 +13,10 @@ source venv-deeprl-py36/bin/activate
 cd projects/successor-feature-representations
 ```
 
+wandb-96: Boxing-v0 - agent doesn't learn when trained with psi network - bb9575a - 
+`SRNetNature_v2_psi(output_dim=config.action_dim, feature_dim=512, hidden_units_sr=(512*4,), hidden_units_psi2q=(2048,512))`
+
+
 ---
 # DeepRL
 
