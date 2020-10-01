@@ -182,4 +182,4 @@ if __name__ == '__main__':
     for key in to_remove:
         weights.pop(key)
 
-    retrain_dqn_feature(weights, version, game=game, n_step=1, replay_cls=UniformReplay, async_replay=False)
+    retrain_dqn_feature(weights=weights, version=version, game=game, n_step=1, replay_cls=UniformReplay, async_replay=False)
