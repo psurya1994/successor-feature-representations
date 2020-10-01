@@ -95,12 +95,18 @@ def dqn_pixel(**kwargs):
     config.async_actor = True
     run_steps(DQNAgent(config))
 
-def retrain_dqn_feature(**kwargs):
+def retrain_dqn_feature(version, weights, **kwargs):
+    """
+        version -> specify phi or psi
+        weights -> specify weights init
+    """
+
     generate_tag(kwargs)
     kwargs.setdefault('log_level', 0)
     kwargs.setdefault('n_step', 1)
     kwargs.setdefault('replay_cls', UniformReplay)
     kwargs.setdefault('async_replay', True)
+    kwargs.setdefault('is_wb', True)
     config = Config()
     config.merge(kwargs)
 
@@ -108,14 +114,21 @@ def retrain_dqn_feature(**kwargs):
     config.eval_env = config.task_fn()
 
     config.optimizer_fn = lambda params: torch.optim.RMSprop(
-        params, lr=0.00025, alpha=0.95, eps=0.01, centered=True)
-    config.network_fn = lambda: VanillaNet(config.action_dim, NatureConvBody(in_channels=config.history_length))
-    # config.network_fn = lambda: DuelingNet(config.action_dim, NatureConvBody(in_channels=config.history_length))
-    config.random_action_prob = LinearSchedule(1.0, 0.01, 1e6)
+        params, lr=0.005, alpha=0.98, eps=1e-4, centered=True)
+
+
+    if(VERSION == 'phi'):
+        # For psi version
+        config.network_fn = lambda: SRNetNature_v2_phi(output_dim=config.action_dim, feature_dim=FEATURE_DIMS, hidden_units_psi2q=(2048,512))
+    else:
+        # For psi version
+        config.network_fn = lambda: SRNetNature_v2_psi(output_dim=config.action_dim, feature_dim=FEATURE_DIMS, hidden_units_sr=(512*4,), hidden_units_psi2q=(2048,512))
+
+    config.random_action_prob = LinearSchedule(1.0, 0.01, 4e6)
     config.batch_size = 32
     config.discount = 0.99
     config.history_length = 4
-    config.max_steps = int(2e7)
+    config.max_steps = int(5e6)
     replay_kwargs = dict(
         memory_size=int(1e6),
         batch_size=config.batch_size,
@@ -130,14 +143,17 @@ def retrain_dqn_feature(**kwargs):
 
     config.state_normalizer = ImageNormalizer()
     config.reward_normalizer = SignNormalizer()
-    config.target_network_update_freq = 10000
+    config.target_network_update_freq = 2000
     config.exploration_steps = 50000
     # config.exploration_steps = 100
     config.sgd_update_frequency = 4
     config.gradient_clip = 5
     config.double_q = False
     config.async_actor = True
-    run_steps(DQNAgent_v2(config))
+    agent = DQNAgent_v2(config)
+    if(weights is not None):
+        print(agent.network.load_state_dict(weights, strict=False))
+    run_steps(agent)
 
 if __name__ == '__main__':
     mkdir('log')
@@ -149,12 +165,21 @@ if __name__ == '__main__':
     select_device(0)
 
     game = 'BoxingNoFrameskip-v4'
-    game = ''
-    dqn_pixel(game=game, n_step=1, replay_cls=UniformReplay, async_replay=False)
-    # quantile_regression_dqn_pixel(game=game)
-    # categorical_dqn_pixel(game=game)
-    # rainbow_pixel(game=game, async_replay=False)
-    # a2c_pixel(game=game)
-    # n_step_dqn_pixel(game=game)
-    # option_critic_pixel(game=game)
-    # ppo_pixel(game=game)
+    # dqn_pixel(game=game, n_step=1, replay_cls=UniformReplay, async_replay=False)
+
+    READFILE = '/home/mila/p/penmetss/trash/DeepRLv2/storage/41-avdsr-trained-boxing-512.weights'
+    version = 'psi'
+
+    weights = torch.load(READFILE).state_dict()
+
+    if(version == 'phi'):
+        # For phi version
+        to_remove = ['decoder.0.weight', 'decoder.0.bias', 'decoder.2.weight', 'decoder.2.bias', 'decoder.4.weight', 'decoder.4.bias', 'decoder.6.weight', 'decoder.6.bias', 'layers_sr.0.weight', 'layers_sr.0.bias', 'layers_sr.1.weight', 'layers_sr.1.bias', 'psi2q.layers.0.weight', 'psi2q.layers.0.bias']
+    else:
+        # For psi version
+        to_remove = ['decoder.0.weight', 'decoder.0.bias', 'decoder.2.weight', 'decoder.2.bias', 'decoder.4.weight', 'decoder.4.bias', 'decoder.6.weight', 'decoder.6.bias', 'psi2q.layers.0.weight', 'psi2q.layers.0.bias']
+
+    for key in to_remove:
+        weights.pop(key)
+
+    retrain_dqn_feature(weights, version, game=game, n_step=1, replay_cls=UniformReplay, async_replay=False)
