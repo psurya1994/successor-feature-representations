@@ -243,7 +243,7 @@ def dsr_unsup_pixel(**kwargs):
     config.batch_size = 32
     config.discount = 0.99
     config.history_length = 4
-    config.max_steps = int(2e7)
+    config.max_steps = int(1e5)
     replay_kwargs = dict(
         memory_size=int(1e6),
         batch_size=config.batch_size,
