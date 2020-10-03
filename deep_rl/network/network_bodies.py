@@ -7,9 +7,11 @@
 from .network_utils import *
 
 class torch_reshape(torch.nn.Module):
+    def __init__(self, into=[64, 9, 9]):
+        self.into = into
     def forward(self, x):
         batch_size = x.shape[0]
-        return x.view(batch_size, 64, 9, 9)
+        return x.view(batch_size, self.into[0], self.into[1], self.into[2])
 
 class Flatten(torch.nn.Module):
     def forward(self, x):
