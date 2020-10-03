@@ -8,6 +8,7 @@ from .network_utils import *
 
 class torch_reshape(torch.nn.Module):
     def __init__(self, into=[64, 9, 9]):
+        super(torch_reshape, self).__init__()
         self.into = into
     def forward(self, x):
         batch_size = x.shape[0]
