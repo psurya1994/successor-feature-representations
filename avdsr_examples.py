@@ -266,10 +266,11 @@ def dsr_unsup_pixel(**kwargs):
     config.async_actor = False
     return run_steps(avDSRAgent(config))
 
-select_device(0)
-game='BoxingNoFrameskip-v0'
-avdsr = dsr_unsup_pixel(game=game)
-dicts = {'l_r':avdsr.loss_rec_vec, 'l_p': avdsr.loss_psi_vec, 'l': avdsr.loss_vec}
-pickle.dump(dicts, open("storage/tmp.p", "wb"))
-import torch
-torch.save(avdsr.network.state_dict(), "storage/avdsr.p")
+if __name__ == "__main__":
+    select_device(0)
+    game='BoxingNoFrameskip-v0'
+    avdsr = dsr_unsup_pixel(game=game)
+    dicts = {'l_r':avdsr.loss_rec_vec, 'l_p': avdsr.loss_psi_vec, 'l': avdsr.loss_vec}
+    pickle.dump(dicts, open("storage/tmp.p", "wb"))
+    import torch
+    torch.save(avdsr.network.state_dict(), "storage/avdsr.p")
