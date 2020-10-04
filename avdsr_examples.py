@@ -1,5 +1,7 @@
 from deep_rl import *
 import pickle
+import uuid
+import torch
 
 # Class for avDSR actor
 class avDSRActorRandom(BaseActor):
@@ -270,7 +272,9 @@ if __name__ == "__main__":
     select_device(0)
     game='BoxingNoFrameskip-v0'
     avdsr = dsr_unsup_pixel(game=game)
+
+    uid = str(uuid.uuid4())
+    print('Run ID is ' + uid)
     dicts = {'l_r':avdsr.loss_rec_vec, 'l_p': avdsr.loss_psi_vec, 'l': avdsr.loss_vec}
-    pickle.dump(dicts, open("storage/tmp.p", "wb"))
-    import torch
-    torch.save(avdsr.network.state_dict(), "storage/avdsr.p")
+    pickle.dump(dicts, open("storage/"+uid+".lc", "wb")) # learning curves
+    torch.save(avdsr.network.state_dict(), "storage/"+uid+".weights") # trained weights
