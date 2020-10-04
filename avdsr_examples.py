@@ -270,4 +270,4 @@ select_device(0)
 game='BoxingNoFrameskip-v0'
 avdsr = dsr_unsup_pixel(game=game)
 dicts = {'l_r':avdsr.loss_rec_vec, 'l_p': avdsr.loss_psi_vec, 'l': avdsr.loss_vec}
-pickle.dump(favorite_color, open("storage/tmp.p", "wb"))
+pickle.dump(dicts, open("storage/tmp.p", "wb"))
