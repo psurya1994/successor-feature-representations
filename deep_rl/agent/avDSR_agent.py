@@ -129,7 +129,6 @@ class avDSRAgent(BaseAgent):
                     if(self.is_wb):
                         wandb.log({"steps_ret": self.total_steps, "returns": ret})
 
-
             self.total_steps += 1
 
             # Feed the transisions into replay

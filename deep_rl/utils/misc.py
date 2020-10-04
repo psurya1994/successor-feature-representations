@@ -31,6 +31,7 @@ def run_steps(agent):
             break
         agent.step()
         agent.switch_task()
+    return agent
 
 
 def get_time_str():
