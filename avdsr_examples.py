@@ -236,14 +236,14 @@ def dsr_unsup_pixel(**kwargs):
     config.task_fn = lambda: Task(config.game)
     config.eval_env = config.task_fn()
 
-    config.optimizer_fn = lambda params: torch.optim.RMSprop(params, lr=0.0001)
+    config.optimizer_fn = lambda params: torch.optim.RMSprop(params, lr=0.00025, alpha=0.95, eps=0.01, centered=True)
     config.network_fn = lambda: SRNetNatureUnsup(output_dim=config.action_dim)
     # config.network_fn = lambda: DuelingNet(config.action_dim, NatureConvBody(in_channels=config.history_length))
     config.random_action_prob = LinearSchedule(1.0, 1.0, 1e6)
     config.batch_size = 32
     config.discount = 0.99
     config.history_length = 4
-    config.max_steps = int(1e5)
+    config.max_steps = int(1e4)
     replay_kwargs = dict(
         memory_size=int(1e6),
         batch_size=config.batch_size,
@@ -271,3 +271,5 @@ game='BoxingNoFrameskip-v0'
 avdsr = dsr_unsup_pixel(game=game)
 dicts = {'l_r':avdsr.loss_rec_vec, 'l_p': avdsr.loss_psi_vec, 'l': avdsr.loss_vec}
 pickle.dump(dicts, open("storage/tmp.p", "wb"))
+import torch
+torch.save(avdsr.network.state_dict(), "storage/avdsr.p")
