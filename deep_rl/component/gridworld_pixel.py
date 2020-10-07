@@ -177,8 +177,8 @@ class PixelGridWorld(gym.Env):
         
         '''
         cs = img_size // self.n
-        h=self.n*cs
-        w=self.n*cs
+        h=img_size
+        w=img_size
         img = Image.new('RGBA', (h, w), "white")
         draw = ImageDraw.Draw(img)
         
