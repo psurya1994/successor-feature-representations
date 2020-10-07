@@ -31,7 +31,7 @@ def make_env(env_id, seed, rank, episode_life=True):
         random_seed(seed)
         if(env_id == "PixelGridWorld"):
             env = PixelGridWorld()
-            env = TransposeImageGridWorld(env)
+            env = TransposeImage(env)
             return env
 
         if env_id.startswith("dm"):
