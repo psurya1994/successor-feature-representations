@@ -17,6 +17,8 @@ from baselines.common.vec_env.subproc_vec_env import SubprocVecEnv, VecEnv
 
 from ..utils import *
 
+from .gridworld_pixel import *
+
 try:
     import roboschool
 except ImportError:
@@ -27,6 +29,11 @@ except ImportError:
 def make_env(env_id, seed, rank, episode_life=True):
     def _thunk():
         random_seed(seed)
+        if(env_id == "PixelGridWorld"):
+            env = PixelGridWorld()
+            env = TransposeImage(env)
+            return env
+
         if env_id.startswith("dm"):
             import dm_control2gym
             _, domain, task = env_id.split('-')
