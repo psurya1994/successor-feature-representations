@@ -33,6 +33,7 @@ class PixelGridWorld(gym.Env):
         self.loc_t = loc_t
         self.cs = 100 # cell size for rendering
         self.p = p
+        self.horizon=100
 
         self.n = n # side of grid world
         self.observation_space = spaces.box.Box(low=np.array([0.0,0.0,0.0]),high=np.array([1.0,1.0,1.0]))
@@ -97,6 +98,8 @@ class PixelGridWorld(gym.Env):
         
         done = False
         self.update_count += 1
+        if(self.update_count >= self.horizon): # NEEDS FIXING
+            return env.render(), self.R[self.state], done, {}
         
         if(self.check_boundaries(action) == True): # you hit a boundary
             return env.render(), self.R[self.state], done, {}
@@ -153,7 +156,7 @@ class PixelGridWorld(gym.Env):
         '''
         self.update_count = 0 
         self.state = state
-        return self.state
+        return self.render()
     
     def ind2xy(self, ind):
         return self.n - 1 - ind // self.n, ind % self.n
