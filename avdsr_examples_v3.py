@@ -112,7 +112,7 @@ class avDSRAgent_v2(BaseAgent):
         self.network = config.network_fn()
         self.network.share_memory()
         # self.optimizer = config.optimizer_fn(self.network.parameters())
-        self.optimizer_phi = config.optimizer_fn(list(self.network.encoder.parameters()) + list(self.network.conv2phi.parameters()) + self.network.decoder.parameters())
+        self.optimizer_phi = config.optimizer_fn(list(self.network.encoder.parameters()) + list(self.network.conv2phi.parameters()) + list(self.network.decoder.parameters()))
         self.optimizer_psi = config.optimizer_fn(list(self.network.encoder.parameters()) + list(self.network.conv2psi.parameters()))
 
         self.actor.set_network(self.network)
@@ -184,8 +184,8 @@ class avDSRAgent_v2(BaseAgent):
             self.loss_psi_vec.append(loss_psi.item())
             self.loss_rec_vec.append(loss_rec.item())
 
-            for g in self.optimizer.param_groups:
-                g['lr'] = config.lr_1(self.total_steps)
+            # for g in self.optimizer.param_groups:
+            #     g['lr'] = config.lr_1(self.total_steps)
             
             # Alternative way to estiamte the loss
             # Step 1: Update weights of phi and phi_rec
@@ -209,13 +209,13 @@ def avdsr_feature_v2(dnn, **kwargs):
     config.task_fn = lambda: Task(config.game)
     config.eval_env = config.task_fn()
     config.c = LinearSchedule(1, 1, 5e3)
-    config.lr_1 = LinearSchedule(1e-3, 1e-3, 5e3)
+    # config.lr_1 = LinearSchedule(1e-3, 1e-3, 5e3)
 
     config.optimizer_fn = lambda params: torch.optim.RMSprop(params, lr=1e-4)
     if(dnn is not None):
         config.network_fn = lambda: dnn
     else:
-        config.network_fn = lambda: SRNetImage(config.action_dim, config=1) #CHECK
+        config.network_fn = lambda: SRNetImageParallel(config.action_dim, config=1) #CHECK
     config.replay_fn = lambda: Replay(memory_size=int(3e4), batch_size=10)
     config.state_normalizer = ImageNormalizer()
     config.random_action_prob = LinearSchedule(1, 1, 1e4) # CHECK
