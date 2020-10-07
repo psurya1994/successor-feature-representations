@@ -31,7 +31,7 @@ def make_env(env_id, seed, rank, episode_life=True):
         random_seed(seed)
         if(env_id == "PixelGridWorld"):
             env = PixelGridWorld()
-            env = TransposeImage(env)
+            env = TransposeImageGridWorld(env)
             return env
 
         if env_id.startswith("dm"):
@@ -80,6 +80,18 @@ class OriginalReturnWrapper(gym.Wrapper):
     def reset(self):
         return self.env.reset()
 
+class TransposeImageGridWorld(gym.ObservationWrapper):
+    def __init__(self, env=None):
+        super(TransposeImageGridWorld, self).__init__(env)
+        obs_shape = self.observation_space.shape
+        self.observation_space = Box(
+            self.observation_space.low,
+            self.observation_space.high,
+            [obs_shape[2], obs_shape[1], obs_shape[0]],
+            dtype=self.observation_space.dtype)
+
+    def observation(self, observation):
+        return observation.transpose(2, 0, 1)
 
 class TransposeImage(gym.ObservationWrapper):
     def __init__(self, env=None):
