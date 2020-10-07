@@ -35,7 +35,8 @@ class PixelGridWorld(gym.Env):
         self.p = p
 
         self.n = n # side of grid world
-        self.observation_space = spaces.Discrete(self.n * self.n) # number of states is equal to area of gridworld
+        self.observation_space = spaces.box.Box([0.0,0.0,0.0],[1.0,1.0,1.0],[80,80,3])
+        # self.observation_space = spaces.Discrete(self.n * self.n) # number of states is equal to area of gridworld
         self.action_space = spaces.Discrete(4) # Number of actions: 4 - [0: up, 1: right, 2: left, 3: down]
         self.init = init_state
         if(init_state is None):
