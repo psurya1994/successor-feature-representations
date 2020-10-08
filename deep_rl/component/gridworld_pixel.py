@@ -14,7 +14,7 @@ import matplotlib.pyplot as plt
 class PixelGridWorld(gym.Env):
     """Grid world environment with variable size grid
     """
-    def __init__(self, n=10, loc_r=None, loc_t=None, init_state=None, loc_w=None, p=0):
+    def __init__(self, n=10, loc_r=[12], loc_t=[12], init_state=None, loc_w=None, p=0):
         '''Constructor object for the grid worlds
         Location is measured from the bottom left of the screen.
         
