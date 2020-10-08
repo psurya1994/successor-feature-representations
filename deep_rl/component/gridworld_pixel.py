@@ -170,7 +170,7 @@ class PixelGridWorld(gym.Env):
                 print('{0:3d}'.format((self.n - i - 1) * self.n + j), end=' ')
             print('')
 
-    def render(self, mode='rgb_array', printR=True, img_size=80):
+    def render(self, mode='rgb_array', printR=True, img_size=84):
         '''Rendering the state of environment
         
         passing for now, need to implement a nice visualization later.
