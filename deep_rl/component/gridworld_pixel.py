@@ -99,7 +99,7 @@ class PixelGridWorld(gym.Env):
         done = False
         self.update_count += 1
         if(self.update_count >= self.horizon): # NEEDS FIXING
-            return self.render(), self.R[self.state], done, {}
+            return self.render(), self.R[self.state], 1, {}
         
         if(self.check_boundaries(action) == True): # you hit a boundary
             return self.render(), self.R[self.state], done, {}
