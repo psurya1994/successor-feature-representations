@@ -1,5 +1,5 @@
 """
-Learning phi and psi parallely like in VIST
+Learning phi and psi parallely like in VISR
 """
 
 

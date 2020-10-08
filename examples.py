@@ -108,16 +108,15 @@ def dqn_pixel_mini(**kwargs):
 
     config.task_fn = lambda: Task(config.game)
     config.eval_env = config.task_fn()
-    config.history_length = 3
 
     config.optimizer_fn = lambda params: torch.optim.RMSprop(
         params, lr=0.00025, alpha=0.95, eps=0.01, centered=True)
-    config.network_fn = lambda: VanillaNet(config.action_dim, NatureConvBody(in_channels=config.history_length))
+    config.network_fn = lambda: VanillaNet(config.action_dim, NatureConvBody(in_channels=3))
     # config.network_fn = lambda: DuelingNet(config.action_dim, NatureConvBody(in_channels=config.history_length))
     config.random_action_prob = LinearSchedule(1.0, 0.01, 1e6)
     config.batch_size = 32
     config.discount = 0.99
-    config.history_length = 3
+    config.history_length = 1
     config.max_steps = int(2e7)
     replay_kwargs = dict(
         memory_size=int(1e6),
@@ -669,8 +668,8 @@ if __name__ == '__main__':
     set_one_thread()
     random_seed()
     # -1 is CPU, a positive integer is the index of GPU
-    select_device(-1)
-    # select_device(0)
+    # select_device(-1)
+    select_device(0)
 
     game = 'CartPole-v0'
     # dqn_feature(game=game, n_step=1, replay_cls=UniformReplay, async_replay=True, noisy_linear=True)

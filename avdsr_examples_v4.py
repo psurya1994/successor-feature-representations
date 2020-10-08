@@ -1,5 +1,5 @@
 """
-Standard protocol
+Standard protocol with reward error.
 """
 
 from deep_rl import *
@@ -74,6 +74,7 @@ class avDSRAgent(BaseAgent):
         if(self.track_loss):
             self.loss_rec_vec = []
             self.loss_psi_vec = []
+            self.loss_rew_vec = []
             self.loss_vec = []
 
         if(self.is_wb):
@@ -163,7 +164,6 @@ class avDSRAgent(BaseAgent):
                 self.optimizer_psi.step()
             with config.lock:
                 self.optimizer_phi.step()
-
 
 # Class for network 
 class SRNetNatureUnsup(nn.Module):
