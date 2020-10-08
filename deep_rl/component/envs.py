@@ -29,16 +29,19 @@ except ImportError:
 def make_env(env_id, seed, rank, episode_life=True):
     def _thunk():
         random_seed(seed)
-        if(env_id == "PixelGridWorld"):
-            env = PixelGridWorld()
-            env = TransposeImage(env)
+
 
         if env_id.startswith("dm"):
             import dm_control2gym
             _, domain, task = env_id.split('-')
             env = dm_control2gym.make(domain_name=domain, task_name=task)
         else:
-            env = gym.make(env_id)
+            if(env_id == "PixelGridWorld"):
+                env = PixelGridWorld()
+                env = TransposeImage(env)
+            else:
+                env = gym.make(env_id)
+                
         is_atari = hasattr(gym.envs, 'atari') and isinstance(
             env.unwrapped, gym.envs.atari.atari_env.AtariEnv)
         if is_atari:
