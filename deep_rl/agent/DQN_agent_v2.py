@@ -78,15 +78,25 @@ class DQNAgent_v2(BaseAgent):
         if(True):
             weights = torch.load(config.weights_file).state_dict()
 
-            if(config.version == 'phi'):
-                # For phi version
-                to_remove = ['decoder.0.weight', 'decoder.0.bias', 'decoder.2.weight', 'decoder.2.bias', 'decoder.4.weight', 'decoder.4.bias', 'decoder.6.weight', 'decoder.6.bias', 'layers_sr.0.weight', 'layers_sr.0.bias', 'layers_sr.1.weight', 'layers_sr.1.bias', 'psi2q.layers.0.weight', 'psi2q.layers.0.bias']
+            if(config.verion == 'phi'):
+                to_remove = ['decoder', 'layers_sr', 'psi2q']
             else:
-                # For psi version
-                to_remove = ['decoder.0.weight', 'decoder.0.bias', 'decoder.2.weight', 'decoder.2.bias', 'decoder.4.weight', 'decoder.4.bias', 'decoder.6.weight', 'decoder.6.bias', 'psi2q.layers.0.weight', 'psi2q.layers.0.bias']
+                to_remove = ['decoder', 'psi2q']
 
-            for key in to_remove:
-                weights.pop(key)
+            for key in weights.keys():
+                if any(key in s for s in to_remove):
+                    weights.pop(key)
+
+
+            # if(config.version == 'phi'):
+            #     # For phi version
+            #     to_remove = ['decoder.0.weight', 'decoder.0.bias', 'decoder.2.weight', 'decoder.2.bias', 'decoder.4.weight', 'decoder.4.bias', 'decoder.6.weight', 'decoder.6.bias', 'layers_sr.0.weight', 'layers_sr.0.bias', 'layers_sr.1.weight', 'layers_sr.1.bias', 'psi2q.layers.0.weight', 'psi2q.layers.0.bias']
+            # else:
+            #     # For psi version
+            #     to_remove = ['decoder.0.weight', 'decoder.0.bias', 'decoder.2.weight', 'decoder.2.bias', 'decoder.4.weight', 'decoder.4.bias', 'decoder.6.weight', 'decoder.6.bias', 'psi2q.layers.0.weight', 'psi2q.layers.0.bias']
+
+            # for key in to_remove:
+            #     weights.pop(key)
 
             self.network.load_state_dict(weights, strict=False)
 

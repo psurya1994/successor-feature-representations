@@ -120,7 +120,7 @@ def retrain_dqn_feature(**kwargs):
 
     if(config.version == 'phi'):
         # For psi version
-        config.network_fn = lambda: SRNetNature_v2_phi(output_dim=config.action_dim, feature_dim=512, hidden_units_psi2q=(2048,1024,512,256))
+        config.network_fn = lambda: SRNetNature_v2_phi_40(output_dim=config.action_dim, feature_dim=512, hidden_units_psi2q=(2048,1024,512,256))
     else:
         # For psi version
         config.network_fn = lambda: SRNetNature_v2_psi(output_dim=config.action_dim, feature_dim=512, hidden_units_sr=(512*4,), hidden_units_psi2q=(2048,512))
@@ -162,11 +162,13 @@ if __name__ == '__main__':
     # select_device(-1)
     select_device(0)
 
-    game = 'BoxingNoFrameskip-v4'
-    # dqn_pixel(game=game, n_step=1, replay_cls=UniformReplay, async_replay=False)
+    # game = 'BoxingNoFrameskip-v4'
+    # READFILE = '/home/mila/p/penmetss/trash/DeepRLv2/storage/41-avdsr-trained-boxing-512.weights'
 
-    READFILE = '/home/mila/p/penmetss/trash/DeepRLv2/storage/41-avdsr-trained-boxing-512.weights'
-    version = 'psi'
+    game='PixelGridWorld'
+    READFILE = '/home/mila/p/penmetss/trash/DeepRLv3/storage/41-avdsr-trained-pixelgrid.weights'
+
+    version = 'phi'
     # torch.nn.Module.dump_patches = True
 
     # weights = torch.load(READFILE).state_dict()

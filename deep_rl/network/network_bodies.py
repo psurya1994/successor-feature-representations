@@ -55,8 +55,6 @@ class SRNetNature_v2_psi(nn.Module):
             [layer_init_0(nn.Linear(dim_in, dim_out)) for dim_in, dim_out in zip(dims_fc[:-1], dims_fc[1:])])
         self.to(Config.DEVICE)
 
-        self.to(Config.DEVICE)
-
     def forward(self, x):
 
         # Finding the latent layer
@@ -98,6 +96,44 @@ class SRNetNature_v2_phi(nn.Module):
             nn.ReLU(True),
             Flatten(),
             nn.Linear(7 * 7 * 64, self.feature_dim)
+        )
+
+        # layers for FC
+        dims_fc = (self.feature_dim,) + hidden_units_psi2q + (output_dim,)
+        self.psi2q = nn.ModuleList(
+            [layer_init_0(nn.Linear(dim_in, dim_out)) for dim_in, dim_out in zip(dims_fc[:-1], dims_fc[1:])])
+        self.to(Config.DEVICE)
+
+    def forward(self, x):
+
+        q_est = self.encoder(tensor(x))
+        for layer in self.psi2q[:-1]:
+            q_est = self.gate(layer(q_est))
+        q_est = self.psi2q[-1](q_est)
+
+        return dict(q=q_est)
+
+class SRNetNature_v2_phi_40(nn.Module):
+    def __init__(self, output_dim, feature_dim=512, hidden_units_psi2q=(2048,512), gate=F.relu, config=1):
+        """
+        This network has two heads: SR head (SR) and reconstruction head (rec).
+        config -> type of learning on top of state abstraction
+            0 - typical SR with weights sharing
+            1 - learning SR without weights sharing
+        """
+        super(SRNetNature_v2_phi, self).__init__()
+        self.feature_dim = feature_dim
+        self.output_dim = output_dim
+        self.gate = gate
+        in_channels = 4
+        
+        self.encoder = nn.Sequential(
+            layer_init(nn.Conv2d(3, 32, kernel_size=3, stride=2)),  # b, 16, 10, 10
+            nn.ReLU(True),
+            layer_init(nn.Conv2d(32, 64, kernel_size=3, stride=2)), 
+            nn.ReLU(True),
+            Flatten(),
+            nn.Linear(9 * 9 * 64, self.feature_dim)
         )
 
         # layers for FC

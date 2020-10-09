@@ -14,7 +14,7 @@ import matplotlib.pyplot as plt
 class PixelGridWorld(gym.Env):
     """Grid world environment with variable size grid
     """
-    def __init__(self, n=10, loc_r=[12], loc_t=[12], init_state=None, loc_w=None, p=0):
+    def __init__(self, n=5, loc_r=[12], loc_t=[12], init_state=None, loc_w=None, p=0):
         '''Constructor object for the grid worlds
         Location is measured from the bottom left of the screen.
         
@@ -170,35 +170,39 @@ class PixelGridWorld(gym.Env):
                 print('{0:3d}'.format((self.n - i - 1) * self.n + j), end=' ')
             print('')
 
-    def render(self, mode='rgb_array', printR=True, img_size=84):
+    def render(self, mode='rgb_array', printR=True, img_size=40):
         '''Rendering the state of environment
         
         passing for now, need to implement a nice visualization later.
         
         '''
-        cs = img_size // self.n
+        bias = 4
+        cs = (img_size-2*bias) // (self.n)
         h=img_size
         w=img_size
-        img = Image.new('RGBA', (h, w), "white")
+        img = Image.new('RGBA', (h, w), "grey")
         draw = ImageDraw.Draw(img)
+        
+        draw.rectangle([bias, bias, h-bias, w-bias], fill="black")
         
 
         for i in range(self.n * self.n):
 
             y, x = self.ind2xy(i)
-            x = x * cs + cs//2
-            y = y * cs + cs//2
+            x = x * cs + cs//2 + bias
+            y = y * cs + cs//2 + bias
+            width = cs // 3
 
             if(self.T[i]==1): # Plotting terminal state
-                draw.ellipse([x-cs/2, y-cs/2, x+cs/2, y+cs/2], fill="green")
+                draw.ellipse([x-width, y-width, x+width, y+width], fill="yellow")
             if(self.state==i):
-                draw.ellipse([x-cs/3, y-cs/3, x+cs/3, y+cs/3], fill="red")
+                draw.ellipse([x-width, y-width, x+width, y+width], fill="red")
             if(self.W[i]==1):
-                draw.rectangle([x-cs/2, y-cs/2, x+cs/2, y+cs/2], fill="black")
+                draw.rectangle([x-width, y-width, x+width, y+width], fill="black")
 
-        # for i in range(1, self.n):
-        #     draw.line([cs*i, 0, cs*i, h], fill="gray", width=10)
-        #     draw.line([0, cs*i, h, cs*i], fill="gray", width=10)
+        for i in range(1, self.n):
+            draw.line([bias+cs*i, 0, bias+cs*i, h], fill="gray", width=1)
+            draw.line([0, bias+cs*i, h, bias+cs*i], fill="gray", width=1)
 
         if(mode=="human"):
             plt.imshow(img)

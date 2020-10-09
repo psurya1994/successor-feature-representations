@@ -56,7 +56,8 @@ class avDSRAgent(BaseAgent):
 
         self.optimizer = config.optimizer_fn(self.network.parameters())
         self.optimizer_phi = config.optimizer_fn(list(self.network.encoder.parameters()) + \
-                                                 list(self.network.decoder.parameters()))
+                                                 list(self.network.decoder.parameters()) + \
+                                                 list(self.network.decode_r.parameters()))
         self.optimizer_psi = config.optimizer_fn(self.network.layers_sr.parameters())
 
 
@@ -106,14 +107,15 @@ class avDSRAgent(BaseAgent):
         psi_next = psi_next[:, next_actions, :]
         out = self.network(states)
         psi_next = self.config.discount * psi_next * (masks.unsqueeze(1).unsqueeze(2).expand(-1, 32,512))
-        phi, psi, state_rec = out['phi'], out['psi'], out['state_rec']
+        phi, psi, state_rec, rs = out['phi'], out['psi'], out['state_rec'], out['rewards']
         psi_next.add_(phi.clone())
         psi = psi[:, actions, :]
 
-        loss_rec = (state_rec - tensor(states)).pow(2).mul(0.5).mean()
-        loss_psi = (psi_next - psi).pow(2).mul(0.5).mean()
+        loss_rec = (state_rec - tensor(states))
+        loss_psi = (psi_next - psi)
+        loss_rew = (rs-rewards)
 
-        return loss_rec, loss_psi
+        return loss_rec, loss_psi, loss_rew
 
     def step(self):
         config = self.config
@@ -144,21 +146,22 @@ class avDSRAgent(BaseAgent):
 
             transitions = self.replay.sample()
             # import pdb; pdb.set_trace()
-            loss_rec, loss_psi = self.compute_loss(transitions)
-            loss_rec, loss_psi = self.reduce_loss(loss_rec), self.reduce_loss(loss_psi)
+            loss_rec, loss_psi, loss_rew = self.compute_loss(transitions)
+            loss_rec, loss_psi, loss_rew = self.reduce_loss(loss_rec), self.reduce_loss(loss_psi), self.reduce_loss(loss_rew)
             loss = (loss_psi + self.c * loss_rec).mean()
 
             if(self.track_loss):
                 self.loss_vec.append(loss.item())
                 self.loss_psi_vec.append(loss_psi.item())
                 self.loss_rec_vec.append(loss_rec.item())
+                self.loss_rew_vec.append(loss_rew.item())
 
             if(self.is_wb):
                 wandb.log({"steps_loss": self.total_steps, "loss": loss.item()})
 
-
             self.optimizer.zero_grad()
             loss_rec.backward(retain_graph=True)
+            loss_rew.backward(retain_graph=True)
             loss_psi.backward()
             with config.lock:
                 self.optimizer_psi.step()
@@ -203,6 +206,8 @@ class SRNetNatureUnsup(nn.Module):
             nn.Tanh()
         )
 
+        self.decode_r = nn.Linear(self.feature_dim, 1)
+
         # layers for SR
         dims_sr = (self.feature_dim,) + hidden_units_sr + (self.feature_dim * output_dim,)
         self.layers_sr = nn.ModuleList(
@@ -218,6 +223,8 @@ class SRNetNatureUnsup(nn.Module):
         # Reconstruction
         state_rec = self.decoder(phi)
 
+        rewards = self.decode_r(phi)
+
         # Estimating the SR from the latent layer
         psi = phi
         for layer in self.layers_sr[:-1]:
@@ -226,7 +233,7 @@ class SRNetNatureUnsup(nn.Module):
         psi = psi.view(psi.size(0), self.output_dim, self.feature_dim) # shape: b x action_dim x state_dim
 
 
-        return dict(phi=phi, psi=psi, state_rec=state_rec)
+        return dict(phi=phi, psi=psi, state_rec=state_rec, rewards=rewards)
 
 # Function for unsupervised representation learning
 def dsr_unsup_pixel(**kwargs):
