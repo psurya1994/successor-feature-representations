@@ -126,7 +126,7 @@ def retrain_dqn_feature(**kwargs):
         config.network_fn = lambda: SRNetNature_v2_psi(output_dim=config.action_dim, feature_dim=512, hidden_units_sr=(512*4,), hidden_units_psi2q=(2048,512))
 
     config.random_action_prob = LinearSchedule(1.0, 0.01, 1e6)
-    config.batch_size = 32
+    config.batch_size = 128
     config.discount = 0.99
     if('Boxing' in config.game):
         config.history_length = 4
