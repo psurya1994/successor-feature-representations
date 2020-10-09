@@ -121,7 +121,7 @@ class SRNetNature_v2_phi_40(nn.Module):
             0 - typical SR with weights sharing
             1 - learning SR without weights sharing
         """
-        super(SRNetNature_v2_phi, self).__init__()
+        super(SRNetNature_v2_phi_40, self).__init__()
         self.feature_dim = feature_dim
         self.output_dim = output_dim
         self.gate = gate
