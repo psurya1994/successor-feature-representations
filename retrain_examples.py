@@ -115,24 +115,24 @@ def retrain_dqn_feature(**kwargs):
     config.eval_env = config.task_fn()
 
     config.optimizer_fn = lambda params: torch.optim.RMSprop(
-        params, lr=0.005, alpha=0.98, eps=1e-4, centered=True)
+        params, lr=0.00025, alpha=0.95, eps=0.01, centered=True)
 
 
     if(config.version == 'phi'):
         # For psi version
-        config.network_fn = lambda: SRNetNature_v2_phi_40(output_dim=config.action_dim, feature_dim=512, hidden_units_psi2q=(2048,1024,512,256))
+        config.network_fn = lambda: SRNetNature_v2_phi_40(output_dim=config.action_dim, feature_dim=512, hidden_units_psi2q=(4096,2048,1024,))
     else:
         # For psi version
         config.network_fn = lambda: SRNetNature_v2_psi(output_dim=config.action_dim, feature_dim=512, hidden_units_sr=(512*4,), hidden_units_psi2q=(2048,512))
 
-    config.random_action_prob = LinearSchedule(1.0, 0.01, 4e6)
+    config.random_action_prob = LinearSchedule(1.0, 0.01, 1e6)
     config.batch_size = 32
     config.discount = 0.99
     if('Boxing' in config.game):
         config.history_length = 4
     else:
         config.history_length = 1
-    config.max_steps = int(5e6)
+    config.max_steps = int(2e7)
     replay_kwargs = dict(
         memory_size=int(1e6),
         batch_size=config.batch_size,
@@ -147,7 +147,7 @@ def retrain_dqn_feature(**kwargs):
 
     config.state_normalizer = ImageNormalizer()
     config.reward_normalizer = SignNormalizer()
-    config.target_network_update_freq = 2000
+    config.target_network_update_freq = 10000
     config.exploration_steps = 50000
     # config.exploration_steps = 100
     config.sgd_update_frequency = 4
