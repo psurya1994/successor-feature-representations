@@ -128,7 +128,10 @@ def retrain_dqn_feature(**kwargs):
     config.random_action_prob = LinearSchedule(1.0, 0.01, 4e6)
     config.batch_size = 32
     config.discount = 0.99
-    config.history_length = 4
+    if('Boxing' in config.game):
+        config.history_length = 4
+    else:
+        config.history_length = 1
     config.max_steps = int(5e6)
     replay_kwargs = dict(
         memory_size=int(1e6),
