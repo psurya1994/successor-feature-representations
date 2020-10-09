@@ -18,6 +18,7 @@ from baselines.common.vec_env.subproc_vec_env import SubprocVecEnv, VecEnv
 from ..utils import *
 
 from .gridworld_pixel import *
+from gym_minigrid.wrappers import *
 
 try:
     import roboschool
@@ -41,6 +42,10 @@ def make_env(env_id, seed, rank, episode_life=True):
                 env = TransposeImage(env)
             else:
                 env = gym.make(env_id)
+                if('MiniGrid' in env_id):
+                    env = RGBImgObsWrapper(env) # Get pixel observations
+                    env = ImgObsWrapper(env) # Get rid of the 'mission' field
+                    env = TransposeImage(env)
                 
         is_atari = hasattr(gym.envs, 'atari') and isinstance(
             env.unwrapped, gym.envs.atari.atari_env.AtariEnv)
