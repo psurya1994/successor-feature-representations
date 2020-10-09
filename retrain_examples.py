@@ -168,8 +168,11 @@ if __name__ == '__main__':
     # game = 'BoxingNoFrameskip-v4'
     # READFILE = '/home/mila/p/penmetss/trash/DeepRLv2/storage/41-avdsr-trained-boxing-512.weights'
 
-    game='PixelGridWorld'
-    READFILE = '/home/mila/p/penmetss/trash/DeepRLv3/storage/41-avdsr-trained-pixelgrid.weights'
+    # game = 'PixelGridWorld'
+    # READFILE = '/home/mila/p/penmetss/trash/DeepRLv3/storage/41-avdsr-trained-pixelgrid.weights'
+
+    game = 'MiniGrid-Empty-5x5-v0'
+    READFILE = '/home/mila/p/penmetss/trash/DeepRLv2/storage/40-avdsr-trained-minigrid.weights'
 
     version = 'phi'
     # torch.nn.Module.dump_patches = True
