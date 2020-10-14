@@ -180,4 +180,4 @@ if __name__ == '__main__':
     weights_file='storage/41-avdsr-trained-boxing-5e-4-1e5.weights'
     # dqn_pixel(game=game, n_step=1, replay_cls=UniformReplay, async_replay=False)
 
-    dqn_pixel_mini(weights_file=READFILE, game=game, n_step=1, replay_cls=UniformReplay, async_replay=False)
+    dqn_pixel(weights_file=READFILE, game=game, n_step=1, replay_cls=UniformReplay, async_replay=False)
