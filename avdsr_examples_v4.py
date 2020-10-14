@@ -162,11 +162,13 @@ class avDSRAgent(BaseAgent):
             self.optimizer.zero_grad()
             loss_rec.backward(retain_graph=True)
             loss_rew.backward(retain_graph=True)
+            with config.lock:
+                self.optimizer_phi.step()
+
+            self.optimizer_psi.zero_grad()
             loss_psi.backward()
             with config.lock:
                 self.optimizer_psi.step()
-            with config.lock:
-                self.optimizer_phi.step()
 
 # Class for network 
 class SRNetNatureUnsup(nn.Module):

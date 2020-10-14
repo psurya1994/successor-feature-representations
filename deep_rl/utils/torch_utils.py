@@ -8,6 +8,9 @@ from .config import *
 import torch
 import os
 
+def convolve(points, kernelSize=5):
+    array = np.convolve(points, np.ones(kernelSize)/kernelSize, 'valid')
+    return array
 
 def select_device(gpu_id):
     # if torch.cuda.is_available() and gpu_id >= 0:

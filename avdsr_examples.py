@@ -6,6 +6,7 @@ from deep_rl import *
 import pickle
 import uuid
 import torch
+import matplotlib.pyplot as plt
 
 # Class for avDSR actor
 class avDSRActorRandom(BaseActor):
@@ -109,8 +110,8 @@ class avDSRAgent(BaseAgent):
         psi_next.add_(phi.clone())
         psi = psi[:, actions, :]
 
-        loss_rec = (state_rec - tensor(states)).pow(2).mul(0.5).mean()
-        loss_psi = (psi_next - psi).pow(2).mul(0.5).mean()
+        loss_rec = (state_rec - tensor(states))
+        loss_psi = (psi_next - psi)
 
         return loss_rec, loss_psi
 
@@ -163,7 +164,6 @@ class avDSRAgent(BaseAgent):
                 self.optimizer_psi.step()
             with config.lock:
                 self.optimizer_phi.step()
-
 
 # Class for network 
 class SRNetNatureUnsup(nn.Module):
@@ -225,7 +225,6 @@ class SRNetNatureUnsup(nn.Module):
         psi = self.layers_sr[-1](psi)
         psi = psi.view(psi.size(0), self.output_dim, self.feature_dim) # shape: b x action_dim x state_dim
 
-
         return dict(phi=phi, psi=psi, state_rec=state_rec)
 
 # Function for unsupervised representation learning
@@ -249,7 +248,7 @@ def dsr_unsup_pixel(**kwargs):
     config.batch_size = 32
     config.discount = 0.99
     config.history_length = 4
-    config.max_steps = int(1e5)
+    config.max_steps = int(1e4)
     replay_kwargs = dict(
         memory_size=int(1e6),
         batch_size=config.batch_size,
@@ -265,12 +264,31 @@ def dsr_unsup_pixel(**kwargs):
     config.state_normalizer = ImageNormalizer()
     config.reward_normalizer = SignNormalizer()
     config.target_network_update_freq = None
-    config.exploration_steps = 5000
+    config.exploration_steps = 1000
     config.sgd_update_frequency = 4
     config.gradient_clip = 5
     config.double_q = False
     config.async_actor = False
     return run_steps(avDSRAgent(config))
+
+def run_steps(agent):
+    config = agent.config
+    agent_name = agent.__class__.__name__
+    t0 = time.time()
+    while True:
+        if config.save_interval and not agent.total_steps % config.save_interval:
+            agent.save('data/%s-%s-%d' % (agent_name, config.tag, agent.total_steps))
+        if config.log_interval and not agent.total_steps % config.log_interval:
+            agent.logger.info('steps %d, %.2f steps/s' % (agent.total_steps, config.log_interval / (time.time() - t0)))
+            t0 = time.time()
+        if config.eval_interval and not agent.total_steps % config.eval_interval:
+            agent.eval_episodes()
+        if config.max_steps and agent.total_steps >= config.max_steps:
+            agent.close()
+            break
+        agent.step()
+        agent.switch_task()
+    return agent
 
 if __name__ == "__main__":
     select_device(0)

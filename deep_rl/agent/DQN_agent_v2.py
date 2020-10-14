@@ -60,7 +60,6 @@ class DQNAgent_v2(BaseAgent):
         self.network.share_memory()
         self.target_network = config.network_fn()
         self.target_network.load_state_dict(self.network.state_dict())
-        self.optimizer = config.optimizer_fn(self.network.psi2q.parameters())
 
         self.actor.set_network(self.network)
         self.total_steps = 0
@@ -75,13 +74,25 @@ class DQNAgent_v2(BaseAgent):
             wandb.init(entity="psurya", project="sample-project")
             wandb.watch_called = False
 
-        if(True):
+        status = 1
+
+        if(status == 1): # freeze and retrain final params
+            self.optimizer = config.optimizer_fn(self.network.psi2q.parameters())
             weights = torch.load(config.weights_file).state_dict()
 
             if(config.version == 'phi'):
                 to_remove = ['decoder', 'layers_sr', 'psi2q']
             else:
                 to_remove = ['decoder', 'psi2q']
+
+            for key in weights.keys():
+                if any(key in s for s in to_remove):
+                    weights.pop(key)
+        if(status == 2): # don't freeze, train all params
+            self.optimizer = config.optimizer_fn(self.network.parameters())
+
+            weights = torch.load(config.weights_file).state_dict() # init network
+            to_remove = ['decoder']
 
             for key in weights.keys():
                 if any(key in s for s in to_remove):
