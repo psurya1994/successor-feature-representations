@@ -690,9 +690,9 @@ if __name__ == '__main__':
     # game = 'BreakoutNoFrameskip-v4'
     game = 'BoxingNoFrameskip-v0'
     # game = 'PixelGridWorld'
-    # dqn_pixel(game=game, n_step=1, replay_cls=UniformReplay, async_replay=False)
+    dqn_pixel(game=game, n_step=1, replay_cls=UniformReplay, async_replay=False)
 
-    dqn_pixel_mini(game=game, n_step=1, replay_cls=UniformReplay, async_replay=False)
+    # dqn_pixel_mini(game=game, n_step=1, replay_cls=UniformReplay, async_replay=False)
     # quantile_regression_dqn_pixel(game=game)
     # categorical_dqn_pixel(game=game)
     # rainbow_pixel(game=game, async_replay=False)
