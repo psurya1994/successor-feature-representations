@@ -9,6 +9,7 @@ retrain let's you retrain the network with specific features loaded and frozen w
 retrain_v2 let's you do the same with unfrozen weights.
 """
 from deep_rl import *
+import uuid
 
 
 # DQN
@@ -56,7 +57,7 @@ def dqn_feature(**kwargs):
     run_steps(DQNAgent(config))
 
 def dqn_pixel(**kwargs):
-    generate_tag(kwargs)
+    # generate_tag(kwargs)
     kwargs.setdefault('log_level', 0)
     kwargs.setdefault('n_step', 1)
     kwargs.setdefault('replay_cls', UniformReplay)
@@ -174,9 +175,11 @@ if __name__ == '__main__':
     select_device(0)
 
     # game = 'BreakoutNoFrameskip-v4'
-    # game = 'BoxingNoFrameskip-v4'
-    game = 'PixelGridWorld'
+    game = 'BoxingNoFrameskip-v0'
+    # game = 'PixelGridWorld'
     READFILE='storage/41-avdsr-trained-boxing-5e-4-1e5.weights'
+    uid = str(uuid.uuid4())[-5:]
+    print('Run ID is ' + uid)
     # dqn_pixel(game=game, n_step=1, replay_cls=UniformReplay, async_replay=False)
 
-    dqn_pixel(weights_file=READFILE, game=game, n_step=1, replay_cls=UniformReplay, async_replay=False)
+    dqn_pixel(weights_file=READFILE, game=game, n_step=1, replay_cls=UniformReplay, async_replay=False, tag='retrain_dqn_feature_'+game+'_'+'version_'+uid)
