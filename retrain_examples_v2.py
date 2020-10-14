@@ -55,7 +55,6 @@ def dqn_feature(**kwargs):
     config.async_actor = False
     run_steps(DQNAgent(config))
 
-
 def dqn_pixel(**kwargs):
     generate_tag(kwargs)
     kwargs.setdefault('log_level', 0)
@@ -177,7 +176,7 @@ if __name__ == '__main__':
     # game = 'BreakoutNoFrameskip-v4'
     # game = 'BoxingNoFrameskip-v4'
     game = 'PixelGridWorld'
-    weights_file='storage/41-avdsr-trained-boxing-5e-4-1e5.weights'
+    READFILE='storage/41-avdsr-trained-boxing-5e-4-1e5.weights'
     # dqn_pixel(game=game, n_step=1, replay_cls=UniformReplay, async_replay=False)
 
     dqn_pixel(weights_file=READFILE, game=game, n_step=1, replay_cls=UniformReplay, async_replay=False)
