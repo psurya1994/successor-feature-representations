@@ -177,9 +177,9 @@ if __name__ == '__main__':
     # game = 'BreakoutNoFrameskip-v4'
     game = 'BoxingNoFrameskip-v0'
     # game = 'PixelGridWorld'
-    READFILE='storage/41-avdsr-trained-boxing-5e-4-1e5.weights'
+    READFILE='storage/41-avdsr-trained-boxing-5e-4-1e5-shuffle.weights'
     uid = str(uuid.uuid4())[-5:]
     print('Run ID is ' + uid)
     # dqn_pixel(game=game, n_step=1, replay_cls=UniformReplay, async_replay=False)
 
-    dqn_pixel(weights_file=READFILE, game=game, n_step=1, replay_cls=UniformReplay, async_replay=False, tag='retrain_dqn_feature_'+game+'_'+'version_'+uid)
+    dqn_pixel(weights_file=READFILE, game=game, n_step=1, replay_cls=UniformReplay, async_replay=False, tag='retrain_dqn_feature_'+game+'_'+'version-shuffle_'+uid)

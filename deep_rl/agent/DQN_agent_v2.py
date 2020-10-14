@@ -67,7 +67,7 @@ class DQNAgent_v2(BaseAgent):
         try:
             self.is_wb = config.is_wb
         except:
-            print('is_wb config not found, using deafult.')
+            print('is_wb config not found, using default.')
             self.is_wb = True
 
         if(self.is_wb):
