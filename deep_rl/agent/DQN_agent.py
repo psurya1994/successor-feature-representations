@@ -66,8 +66,8 @@ class DQNAgent(BaseAgent):
         try:
             self.is_wb = config.is_wb
         except:
-            print('is_wb config not found, using deafult.')
-            self.is_wb = False
+            print('is_wb config not found, using default: True.')
+            self.is_wb = True
 
         if(self.is_wb):
             wandb.init(entity="psurya", project="sample-project")
