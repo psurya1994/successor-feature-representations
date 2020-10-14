@@ -88,11 +88,11 @@ class DQNAgent_v2(BaseAgent):
             for key in weights.keys():
                 if any(key in s for s in to_remove):
                     weights.pop(key)
-                    
+
         if(status == 2): # don't freeze, train all params
             self.optimizer = config.optimizer_fn(self.network.parameters())
 
-            weights = torch.load(config.weights_file).state_dict() # init network
+            weights = torch.load(config.weights_file) # init network
             to_remove = ['decoder']
 
             for key in weights.keys():
