@@ -74,7 +74,7 @@ class DQNAgent_v2(BaseAgent):
             wandb.init(entity="psurya", project="sample-project")
             wandb.watch_called = False
 
-        status = 1
+        status = 2
 
         if(status == 1): # freeze and retrain final params
             self.optimizer = config.optimizer_fn(self.network.psi2q.parameters())
@@ -88,6 +88,7 @@ class DQNAgent_v2(BaseAgent):
             for key in weights.keys():
                 if any(key in s for s in to_remove):
                     weights.pop(key)
+                    
         if(status == 2): # don't freeze, train all params
             self.optimizer = config.optimizer_fn(self.network.parameters())
 
@@ -97,17 +98,6 @@ class DQNAgent_v2(BaseAgent):
             for key in weights.keys():
                 if any(key in s for s in to_remove):
                     weights.pop(key)
-
-
-            # if(config.version == 'phi'):
-            #     # For phi version
-            #     to_remove = ['decoder.0.weight', 'decoder.0.bias', 'decoder.2.weight', 'decoder.2.bias', 'decoder.4.weight', 'decoder.4.bias', 'decoder.6.weight', 'decoder.6.bias', 'layers_sr.0.weight', 'layers_sr.0.bias', 'layers_sr.1.weight', 'layers_sr.1.bias', 'psi2q.layers.0.weight', 'psi2q.layers.0.bias']
-            # else:
-            #     # For psi version
-            #     to_remove = ['decoder.0.weight', 'decoder.0.bias', 'decoder.2.weight', 'decoder.2.bias', 'decoder.4.weight', 'decoder.4.bias', 'decoder.6.weight', 'decoder.6.bias', 'psi2q.layers.0.weight', 'psi2q.layers.0.bias']
-
-            # for key in to_remove:
-            #     weights.pop(key)
 
             self.network.load_state_dict(weights, strict=False)
 
