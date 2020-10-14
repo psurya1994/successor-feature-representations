@@ -688,8 +688,8 @@ if __name__ == '__main__':
     # td3_continuous(game=game)
 
     # game = 'BreakoutNoFrameskip-v4'
-    # game = 'BoxingNoFrameskip-v4'
-    game = 'PixelGridWorld'
+    game = 'BoxingNoFrameskip-v0'
+    # game = 'PixelGridWorld'
     # dqn_pixel(game=game, n_step=1, replay_cls=UniformReplay, async_replay=False)
 
     dqn_pixel_mini(game=game, n_step=1, replay_cls=UniformReplay, async_replay=False)
