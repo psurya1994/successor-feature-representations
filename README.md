@@ -20,6 +20,10 @@ wandb-110: DQN on pixel gridworld, solves just fine.
 
 Next: making network deep and seeing if phi learns well.
 
+wandb-117: DQN boxing-v0 DSRinit retrain (non frozen)
+wandb-118: DQN boxing-v0 DSRinit retrain shuffle (non frozen)
+wandb-119: DQN vanilla boxing-v0
+
 
 
 

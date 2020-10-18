@@ -73,6 +73,7 @@ class DQNAgent_v2(BaseAgent):
         if(self.is_wb):
             wandb.init(entity="psurya", project="sample-project")
             wandb.watch_called = False
+            wandb.config.load = config.weights_file
 
         status = 2
 
