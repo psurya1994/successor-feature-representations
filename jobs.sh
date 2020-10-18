@@ -13,4 +13,4 @@ module load python/3.6
 source venv-deeprl-py36/bin/activate
 cd projects/successor-feature-representations
 
-python examples.py
+python retrain_examples_v2.py
