@@ -70,12 +70,13 @@ class DQNAgent_v2(BaseAgent):
             print('is_wb config not found, using default.')
             self.is_wb = True
 
+
+        status = 3
         if(self.is_wb):
             wandb.init(entity="psurya", project="sample-project")
             wandb.watch_called = False
             wandb.config.load = config.weights_file
-
-        status = 2
+            wandb.config.status = config.status        
 
         if(status == 1): # freeze and retrain final params
             self.optimizer = config.optimizer_fn(self.network.psi2q.parameters())
@@ -101,6 +102,26 @@ class DQNAgent_v2(BaseAgent):
                     weights.pop(key)
 
             self.network.load_state_dict(weights, strict=False)
+
+        if(status == 3): # freeze only encoder.0
+
+            try:
+
+                weights = torch.load(config.weights_file) # init network
+                to_remove = ['decoder']
+
+                for key in weights.keys():
+                    if any(key in s for s in to_remove):
+                        weights.pop(key)
+
+                self.network.load_state_dict(weights, strict=False)
+            except:
+                print('weights file doesnt exist, using default init')
+
+            self.network.encoder[0].weight.requires_grad = False
+            self.network.encoder[0].bias.requires_grad = False
+
+            self.optimizer = config.optimizer_fn(filter(lambda p: p.requires_grad, self.network.parameters()))
 
     def close(self):
         close_obj(self.replay)

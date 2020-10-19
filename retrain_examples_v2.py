@@ -10,7 +10,7 @@ retrain_v2 let's you do the same with unfrozen weights.
 """
 from deep_rl import *
 import uuid
-
+import sys
 
 # DQN
 def dqn_feature(**kwargs):
@@ -177,7 +177,11 @@ if __name__ == '__main__':
     # game = 'BreakoutNoFrameskip-v4'
     game = 'BoxingNoFrameskip-v0'
     # game = 'PixelGridWorld'
-    READFILE='storage/41-avdsr-trained-boxing-5e-4-1e5.weights'
+
+
+    # READFILE='storage/41-avdsr-trained-boxing-5e-4-1e5.weights'
+    READFILE = sys.argv[1]
+    
     uid = str(uuid.uuid4())[-5:]
     print('Run ID is ' + uid)
     # dqn_pixel(game=game, n_step=1, replay_cls=UniformReplay, async_replay=False)
