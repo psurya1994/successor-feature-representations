@@ -177,6 +177,7 @@ if __name__ == '__main__':
 
     # game = 'BreakoutNoFrameskip-v4'
     game = 'BoxingNoFrameskip-v0'
+    version = 'phi'
     # game = 'PixelGridWorld'
 
 
@@ -187,4 +188,4 @@ if __name__ == '__main__':
     print('Run ID is ' + uid)
     # dqn_pixel(game=game, n_step=1, replay_cls=UniformReplay, async_replay=False)
 
-    dqn_pixel(weights_file=READFILE, game=game, n_step=1, replay_cls=UniformReplay, async_replay=False, tag='retrain_dqn_feature_'+game+'_'+'version-shuffle_'+uid)
+    dqn_pixel(weights_file=READFILE, version=version, game=game, n_step=1, replay_cls=UniformReplay, async_replay=False, tag='retrain_dqn_feature_'+game+'_'+'version-shuffle_'+uid)
