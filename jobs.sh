@@ -5,7 +5,7 @@
 #SBATCH --mem=20G                             # Ask for 20 GB of RAM
 #SBATCH --time=24:00:00                        # The job will run for 9 hours
 #SBATCH -o storage/slurm-%j.out  # Write the log on tmp1
-#SBATCH --exclude=rtx3,rtx5,leto20
+#SBATCH --exclude=rtx3,rtx5,leto20,leto26,eos21
 
 
 cd ~

@@ -76,7 +76,7 @@ class DQNAgent_v2(BaseAgent):
             wandb.init(entity="psurya", project="sample-project")
             wandb.watch_called = False
             wandb.config.load = config.weights_file
-            wandb.config.status = status        
+            wandb.config.status2 = status        
 
         # Setting optimizer function based on status
         if(status == 1): # freeze and retrain

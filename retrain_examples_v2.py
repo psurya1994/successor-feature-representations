@@ -62,7 +62,7 @@ def dqn_pixel(**kwargs):
     kwargs.setdefault('n_step', 1)
     kwargs.setdefault('replay_cls', UniformReplay)
     kwargs.setdefault('async_replay', True)
-    kwargs.setdefault('is_wb', False)
+    kwargs.setdefault('is_wb', True)
     config = Config()
     config.merge(kwargs)
 
