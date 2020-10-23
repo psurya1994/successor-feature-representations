@@ -92,8 +92,8 @@ class DQNAgent_v2(BaseAgent):
         weights = torch.load(config.weights_file).state_dict()
         if(config.version == 'phi'):
                 to_remove = ['decoder', 'layers_sr', 'psi2q']
-            else:
-                to_remove = ['decoder', 'psi2q']
+        else:
+            to_remove = ['decoder', 'psi2q']
 
 
         try: # freeze and retrain final params
