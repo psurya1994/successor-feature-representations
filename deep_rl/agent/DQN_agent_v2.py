@@ -88,16 +88,8 @@ class DQNAgent_v2(BaseAgent):
             self.network.encoder[0].bias.requires_grad = False
             self.optimizer = config.optimizer_fn(filter(lambda p: p.requires_grad, self.network.parameters()))
 
-        # Finding the initialization weights
-        weights = torch.load(config.weights_file).state_dict()
-        if(config.version == 'phi'):
-                to_remove = ['decoder', 'layers_sr', 'psi2q']
-        else:
-            to_remove = ['decoder', 'psi2q']
-
-
         try: # freeze and retrain final params
-            weights = torch.load(config.weights_file).state_dict()
+            weights = torch.load(config.weights_file) # use .state_dict() for older models
 
             # pop unnecessary keys
             if(config.version == 'phi'):
