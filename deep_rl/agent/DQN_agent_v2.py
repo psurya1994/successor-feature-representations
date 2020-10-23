@@ -80,7 +80,12 @@ class DQNAgent_v2(BaseAgent):
 
         # Setting optimizer function based on status
         if(status == 1): # freeze and retrain
-            self.optimizer = config.optimizer_fn(self.network.psi2q.parameters())
+            if(config.version == 'phi'):
+                self.optimizer = config.optimizer_fn(self.network.psi2q.parameters() + self.network.layers_sr.parameters())
+            elif(config.version == 'psi'):
+                self.optimizer = config.optimizer_fn(self.network.psi2q.parameters())
+            else:
+                raise
         elif(status == 2): # unfreeze and retrain
             self.optimizer = config.optimizer_fn(self.network.parameters())
         elif(status == 3): # freeze only layer 1 and retrain

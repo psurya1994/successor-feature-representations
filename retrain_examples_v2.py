@@ -71,7 +71,7 @@ def dqn_pixel(**kwargs):
 
     config.optimizer_fn = lambda params: torch.optim.RMSprop(
         params, lr=0.00025, alpha=0.95, eps=0.01, centered=True)
-    config.network_fn = lambda: VanillaNet(config.action_dim, NatureConvBody(in_channels=config.history_length))
+    config.network_fn = lambda: SRNetNatureSup(config.action_dim, in_channels=config.history_length)
     # config.network_fn = lambda: DuelingNet(config.action_dim, NatureConvBody(in_channels=config.history_length))
     config.random_action_prob = LinearSchedule(1.0, 0.01, 1e6)
     config.batch_size = 32
@@ -101,8 +101,8 @@ def dqn_pixel(**kwargs):
     config.async_actor = True
     run_steps(DQNAgent_v2(config))
 
-class SRNetNatureSup(nn.Module):
-    def __init__(self, output_dim, hidden_units_sr=(512*4,), hidden_units_psi2q=(1000,), gate=F.relu, config=1):
+class SRNetNatureSup_psi(nn.Module):
+    def __init__(self, output_dim, in_channels=4, hidden_units_sr=(512*4,), hidden_units_psi2q=(1000,), gate=F.relu, config=1):
         """
         This network has two heads: SR head (SR) and reconstruction head (rec).
         config -> type of learning on top of state abstraction
@@ -113,7 +113,6 @@ class SRNetNatureSup(nn.Module):
         self.feature_dim = 512
         self.output_dim = output_dim
         self.gate = gate
-        in_channels = 4
         
         self.encoder = nn.Sequential(
             layer_init(nn.Conv2d(in_channels, 32, kernel_size=8, stride=4)),  # b, 16, 10, 10
