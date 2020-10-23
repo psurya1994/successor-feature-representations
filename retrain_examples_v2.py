@@ -101,7 +101,7 @@ def dqn_pixel(**kwargs):
     config.async_actor = True
     run_steps(DQNAgent_v2(config))
 
-class SRNetNatureSup_psi(nn.Module):
+class SRNetNatureSup(nn.Module):
     def __init__(self, output_dim, in_channels=4, hidden_units_sr=(512*4,), hidden_units_psi2q=(1000,), gate=F.relu, config=1):
         """
         This network has two heads: SR head (SR) and reconstruction head (rec).
