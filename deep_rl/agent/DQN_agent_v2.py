@@ -71,57 +71,54 @@ class DQNAgent_v2(BaseAgent):
             self.is_wb = True
 
 
-        status = 3
+        status = 2
         if(self.is_wb):
             wandb.init(entity="psurya", project="sample-project")
             wandb.watch_called = False
             wandb.config.load = config.weights_file
             wandb.config.status = status        
 
-        if(status == 1): # freeze and retrain final params
+        # Setting optimizer function based on status
+        if(status == 1): # freeze and retrain
             self.optimizer = config.optimizer_fn(self.network.psi2q.parameters())
-            weights = torch.load(config.weights_file).state_dict()
+        elif(status == 2): # unfreeze and retrain
+            self.optimizer = config.optimizer_fn(self.network.parameters())
+        elif(status == 3): # freeze only layer 1 and retrain
+            self.network.encoder[0].weight.requires_grad = False
+            self.network.encoder[0].bias.requires_grad = False
+            self.optimizer = config.optimizer_fn(filter(lambda p: p.requires_grad, self.network.parameters()))
 
-            if(config.version == 'phi'):
+        # Finding the initialization weights
+        weights = torch.load(config.weights_file).state_dict()
+        if(config.version == 'phi'):
                 to_remove = ['decoder', 'layers_sr', 'psi2q']
             else:
                 to_remove = ['decoder', 'psi2q']
 
+
+        try: # freeze and retrain final params
+            weights = torch.load(config.weights_file).state_dict()
+
+            # pop unnecessary keys
+            if(config.version == 'phi'):
+                to_remove = ['decoder', 'layers_sr', 'psi2q']
+            else:
+                to_remove = ['decoder', 'psi2q']
+            pop_keys = []
             for key in weights.keys():
-                if any(key in s for s in to_remove):
-                    weights.pop(key)
+                if any(s in key for s in to_remove):
+                    pop_keys.append(key)
+            for key in pop_keys:
+                weights.pop(key)
 
-        if(status == 2): # don't freeze, train all params
-            self.optimizer = config.optimizer_fn(self.network.parameters())
+            # load necessary keys into network
+            out = self.network.load_state_dict(weights, strict=False)
+            # ensure all keys are expected
+            if(len(out.unexpected_keys)>1):
+                raise RuntimeError("unexpected_keys while loading weights")
 
-            weights = torch.load(config.weights_file) # init network
-            to_remove = ['decoder']
-
-            for key in weights.keys():
-                if any(key in s for s in to_remove):
-                    weights.pop(key)
-
-            self.network.load_state_dict(weights, strict=False)
-
-        if(status == 3): # freeze only encoder.0
-
-            try:
-
-                weights = torch.load(config.weights_file) # init network
-                to_remove = ['decoder']
-
-                for key in weights.keys():
-                    if any(key in s for s in to_remove):
-                        weights.pop(key)
-
-                self.network.load_state_dict(weights, strict=False)
-            except:
-                print('weights file doesnt exist, using default init')
-
-            self.network.encoder[0].weight.requires_grad = False
-            self.network.encoder[0].bias.requires_grad = False
-
-            self.optimizer = config.optimizer_fn(filter(lambda p: p.requires_grad, self.network.parameters()))
+        except:
+            raise # need to fix this, set weights to default instead
 
     def close(self):
         close_obj(self.replay)
