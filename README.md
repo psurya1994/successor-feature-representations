@@ -25,6 +25,7 @@ wandb-118: DQN boxing-v0 DSRinit retrain shuffle (non frozen)
 wandb-119: DQN vanilla boxing-v0
 
 wandb-120:126 -- all of them were vanilla net, ignore!
+Rerunning these experiments! Use config.status2 on wandb to visualize.
 
 
 
